@@ -1,0 +1,8 @@
+language: python
+python:
+  - "3.6"
+install:
+  - pipenv install --ignore-pipfile
+script:
+  - pytest
+  - pylint
