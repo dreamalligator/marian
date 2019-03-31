@@ -30,7 +30,7 @@ Simply run `pipenv run pytest`.
 
 ## Linting
 
-Simply run `pipenv run pylint`.
+Simply run `pipenv run pylint **/*.py`.
 
 ## License
 

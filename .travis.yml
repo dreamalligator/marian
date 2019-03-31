@@ -5,4 +5,4 @@ install:
   - pipenv install --ignore-pipfile
 script:
   - pytest
-  - pylint
+  - pylint **/*.py
