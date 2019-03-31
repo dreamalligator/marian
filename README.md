@@ -32,6 +32,10 @@ Simply run `pipenv run pytest`.
 
 Simply run `pipenv run pylint **/*.py`.
 
+## Run
+
+`pipenv run flask run`
+
 ## License
 
 MIT

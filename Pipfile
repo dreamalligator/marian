@@ -5,11 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+pylint-quotes = "*"
+pytest = "*"
 
 [packages]
 flask = "*"
 flask-restful = "*"
-pylint-quotes = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.6"
