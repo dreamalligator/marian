@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 def create_app(test_config=None):
     """create app"""
@@ -52,9 +52,10 @@ def create_app(test_config=None):
             final_output += line + '<br>'
         return final_output
 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World?'
+    @app.route('/hello/')
+    @app.route('/hello/<name>')
+    def hello(name=None):
+        return render_template('hello.html', name=name)
 
     @app.route('/positions')
     def positions():
@@ -63,5 +64,7 @@ def create_app(test_config=None):
     @app.route('/positions/<ticker>')
     def position(ticker):
         return f'found {ticker}'
+
+
 
     return app
