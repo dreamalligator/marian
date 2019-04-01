@@ -12,6 +12,7 @@ pytest = "*"
 flask = "*"
 flask-restful = "*"
 python-dotenv = "*"
+robin-stocks = "*"
 
 [requires]
 python_version = "3.6"

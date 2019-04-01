@@ -2,7 +2,8 @@
 
 import os
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, send_from_directory
+from get_bent.robinhood import rh_login, rh_holdings
 
 def create_app(test_config=None):
     """create app"""
@@ -28,10 +29,12 @@ def create_app(test_config=None):
         pass
 
     @app.route('/')
-    def index():
+    def index(): # pylint: disable=W0612
         html = 'Find documentation at <a href="https://github.com/nebulousdog/lazy-money-maker">'
         html += 'https://github.com/nebulousdog/lazy-money-maker</a>.<br><br><hr><h2>Routes</h2>'
+        html += '<pre>'
         html += list_routes()
+        html += '</pre>'
         html += '<br><br><hr><br>🐈'
         return html
 
@@ -44,7 +47,7 @@ def create_app(test_config=None):
                 options[arg] = "[{0}]".format(arg)
 
             methods = ','.join(rule.methods)
-            line = urllib.parse.unquote("{:50s} {:20s} {}".format(rule.endpoint, methods, rule))
+            line = urllib.parse.unquote("{:15s} {:20s} {}".format(rule.endpoint, methods, rule))
             output.append(line)
 
         final_output = ''
@@ -54,17 +57,27 @@ def create_app(test_config=None):
 
     @app.route('/hello/')
     @app.route('/hello/<name>')
-    def hello(name=None):
+    def hello(name=None): # pylint: disable=W0612
         return render_template('hello.html', name=name)
 
     @app.route('/positions')
-    def positions():
-        return jsonify([0, 0, 0])
+    def positions(): # pylint: disable=W0612
+        return rh_holdings()
 
     @app.route('/positions/<ticker>')
-    def position(ticker):
+    def position(ticker): # pylint: disable=W0612
         return f'found {ticker}'
 
+    @app.route('/login')
+    def login(): # pylint: disable=W0612
+        return rh_login()
 
+    @app.route('/stylesheets/<path:path>')
+    def send_stylesheet(path): # pylint: disable=W0612
+        return send_from_directory('stylesheets', path)
+
+    @app.route('/javascripts/<path:path>')
+    def send_js(path): # pylint: disable=W0612
+        return send_from_directory('javascripts', path)
 
     return app

@@ -1,7 +1,13 @@
 <!doctype html>
-<title>Hello from Flask</title>
-{% if name %}
+<head>
+  <title>Hello from Flask</title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
+  <script src="/javascripts/main.js"></script>
+</head>
+<body>
+  {% if name %}
   <h1>Hello {{ name }}!</h1>
-{% else %}
+  {% else %}
   <h1>Hello, World!</h1>
-{% endif %}
+  {% endif %}
+</body>

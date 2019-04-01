@@ -20,6 +20,12 @@ cd ./lazy-money-maker
 
 Use `pipenv` for all dependencies.
 
+### References
+
+* https://github.com/jmfernandes/robin_stocks/, http://www.robin-stocks.com/en/latest/
+* https://api.robinhood.com/
+* https://github.com/sanko/Robinhood
+
 ## Development
 
 > To activate this project's virtualenv, run `pipenv shell`.
