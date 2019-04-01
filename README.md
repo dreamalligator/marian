@@ -42,9 +42,22 @@ then check it out the results
 `curl http://127.0.0.1:5000/`
 
 `firefox http://localhost:5000/positions/bkep`
+
 ```
 curl http://localhost:5000/positions/bkep
 found bkep
+```
+
+```bash
+pipenv run flask routes
+Loading .env environment variables…
+Endpoint   Methods  Rule
+---------  -------  -----------------------
+hello      GET      /hello
+index      GET      /
+position   GET      /positions/<ticker>
+positions  GET      /positions
+static     GET      /static/<path:filename>
 ```
 
 ## License

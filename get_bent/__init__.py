@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 
 def create_app(test_config=None):
     """create app"""
@@ -58,7 +58,7 @@ def create_app(test_config=None):
 
     @app.route('/positions')
     def positions():
-        return [0, 0, 0]
+        return jsonify([0, 0, 0])
 
     @app.route('/positions/<ticker>')
     def position(ticker):
