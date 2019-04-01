@@ -36,6 +36,17 @@ Simply run `pipenv run pylint **/*.py`.
 
 `pipenv run flask run`
 
+then check it out the results
+
+`firefox http://127.0.0.1:5000/`
+`curl http://127.0.0.1:5000/`
+
+`firefox http://localhost:5000/positions/bkep`
+```
+curl http://localhost:5000/positions/bkep
+found bkep
+```
+
 ## License
 
 MIT
