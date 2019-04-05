@@ -1,1 +1,3 @@
-rh_login_info.json
+instance
+.pytest_cache
+secrets.py

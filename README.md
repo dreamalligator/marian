@@ -40,6 +40,13 @@ Simply run `pipenv run pylint **/*.py`.
 
 ## Run
 
+There is a `secrets.py` file that `install.sh` made in the `get_bent` dir. Set your username and password in there.
+
+```python
+username='ricknmorty'
+password='gaggablaghblagh'
+```
+
 `pipenv run flask run`
 
 then check it out the results
