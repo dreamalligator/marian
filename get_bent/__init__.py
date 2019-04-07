@@ -2,8 +2,20 @@
 
 import os
 
-from flask import Flask, jsonify, render_template, send_from_directory
-from get_bent.robinhood import rh_login, rh_holdings
+from flask import (
+    Flask,
+    jsonify,
+    render_template,
+    request,
+    send_from_directory,
+)
+from get_bent.robinhood import (
+    raw_collection,
+    rh_dividends,
+    rh_positions,
+    rh_quote,
+    rh_watchlist,
+)
 
 def create_app(test_config=None):
     """create app"""
@@ -12,7 +24,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'get_bent.sqlite'),
     )
 
     if test_config is None:
@@ -62,15 +74,32 @@ def create_app(test_config=None):
 
     @app.route('/positions')
     def positions(): # pylint: disable=W0612
-        return rh_holdings()
+        csv = request.args.get('csv')
+        return rh_positions(csv)
 
-    @app.route('/positions/<ticker>')
-    def position(ticker): # pylint: disable=W0612
-        return f'found {ticker}'
+    @app.route('/collection/<tag>')
+    def collection(tag): # pylint: disable=W0612
+        return raw_collection(tag)
+
+    @app.route('/quote/<symbol>')
+    def quote(symbol): # pylint: disable=W0612
+        return rh_quote(symbol)
+
+    @app.route('/watchlist')
+    def watchlist(): # pylint: disable=W0612
+        return rh_watchlist()
+
+    @app.route('/dividends')
+    def dividends(): # pylint: disable=W0612
+        return rh_dividends()
 
     @app.route('/login')
     def login(): # pylint: disable=W0612
-        return rh_login()
+        return '''
+            <h1>log in</h1>
+            <input type="text">
+            <input type="password">
+            '''
 
     @app.route('/stylesheets/<path:path>')
     def send_stylesheet(path): # pylint: disable=W0612
