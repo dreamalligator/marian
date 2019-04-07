@@ -72,9 +72,12 @@ def create_app(test_config=None):
     def hello(name=None): # pylint: disable=W0612
         return render_template('hello.html', name=name)
 
+    # NOTE: csv=false evaluates to truthy, only care about existence of `csv`
+    #   param atm, but really should clear that up.
+    #   expecting only `/positions?csv` or `/positions`.
     @app.route('/positions')
     def positions(): # pylint: disable=W0612
-        csv = request.args.get('csv')
+        csv = request.args.get('csv') is not None
         return rh_positions(csv)
 
     @app.route('/collection/<tag>')

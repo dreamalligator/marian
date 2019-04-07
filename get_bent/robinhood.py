@@ -81,7 +81,7 @@ def list_to_row(input_list):
     row += '\n'
     return row
 
-def rh_positions(csv=False):
+def rh_positions(csv):
     """my portfolio positions. formatted for personal use in Google Sheets."""
 
     positions = raw_positions()
