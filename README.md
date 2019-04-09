@@ -17,7 +17,7 @@ alias python="python3"
 alias pip="pip3"
 ```
 
-Similarly, I use the `./install.sh` script for my development, but if you're not on a Debian-based machine you'll have to change the steps to get there. Please feel free to [open an issue](https://github.com/nebulousdog/lazy_money_maker/issues) or [pull request](https://github.com/nebulousdog/lazy_money_maker/pulls) on getting this set up for any other environment!
+Similarly, I use the [`./install.sh`](https://github.com/nebulousdog/lazy_money_maker/blob/master/install.sh) script for my development, but if you're not on a Debian-based machine you'll have to change the steps to get there. Please feel free to [open an issue](https://github.com/nebulousdog/lazy_money_maker/issues) or [pull request](https://github.com/nebulousdog/lazy_money_maker/pulls) on getting this set up for any other environment!
 
 ```bash
 git clone git@github.com:nebulousdog/lazy_money_maker.git
