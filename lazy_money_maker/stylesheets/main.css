@@ -1,5 +1,5 @@
 body {
-  background-color: pink;
+  background-color: rgb(255, 192, 203);
   color: #000;
   font-family: monospace;
   font-size: 16px;
@@ -23,4 +23,16 @@ button {
 
 .error-message {
   padding: 4px;
+}
+
+.lazy-title {
+  height: 32px;
+  line-height: 32px;
+}
+
+.lazy-logo {
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: top;
+  width: 32px;
 }

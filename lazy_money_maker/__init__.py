@@ -100,4 +100,8 @@ def create_app(test_config=None):
     def send_js(path): # pylint: disable=unused-variable
         return send_from_directory('javascripts', path)
 
+    @app.route('/images/<path:path>')
+    def send_img(path): # pylint: disable=unused-variable
+        return send_from_directory('images', path)
+
     return app
