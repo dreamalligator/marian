@@ -14,4 +14,6 @@ def get_app():
     return app
 
 def test_list_routes():
-    assert list_routes(get_app())[0] == 'index           GET,HEAD,OPTIONS     /'
+    generated_routes = list_routes(get_app())
+    print('generated_routes', generated_routes)
+    assert generated_routes[0] == 'index           GET,HEAD,OPTIONS          /'
