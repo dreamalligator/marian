@@ -1,6 +1,9 @@
-"""rh api related methods."""
+"""
+rh api related methods.
+"""
 
 from flask import jsonify
+
 from fast_arrow import (
     Client,
     Collection,
@@ -9,30 +12,34 @@ from fast_arrow import (
     StockMarketdata,
     StockPosition,
 )
-from get_bent.secrets import username, password
+
+from lazy_money_maker.utils.config import read_secrets
 
 CLIENT = None
 
 def rh_client():
     """start and memoize a RH connection via fast_arrow."""
 
-    global CLIENT # pylint: disable=W0603
+    global CLIENT # pylint: disable=global-statement
 
     if CLIENT is None:
-        print(f'authenticating for {username}...')
-        CLIENT = Client(username=username, password=password)
+        print(f'authenticating....')
+
+        secrets = read_secrets('rh_account')
+
+        CLIENT = Client(username=secrets['username'], password=secrets['password'])
         CLIENT.authenticate()
         print('done.')
 
     return CLIENT
 
 def raw_dividends():
-    """raw dividends via fast_arrow"""
+    """raw dividends via fast_arrow."""
 
     return Dividend.all(rh_client())
 
 def rh_dividends():
-    """rh dividend infos formatted for personal use"""
+    """rh dividend infos formatted for personal use."""
 
     dividends = raw_dividends()
 
