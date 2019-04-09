@@ -2,7 +2,11 @@
 rh api related methods.
 """
 
-from flask import jsonify
+from flask import (
+    jsonify,
+    redirect,
+    url_for,
+)
 
 from fast_arrow import (
     Client,
@@ -26,9 +30,9 @@ def rh_client():
         print(f'authenticating....')
 
         secrets = read_secrets('rh_account')
-
         CLIENT = Client(username=secrets['username'], password=secrets['password'])
         CLIENT.authenticate()
+
         print('done.')
 
     return CLIENT

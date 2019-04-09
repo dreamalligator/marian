@@ -14,7 +14,7 @@ def list_routes(app):
             options[arg] = f'[{arg}]'
 
         methods = ','.join(sorted(rule.methods))
-        line = urllib.parse.unquote("{:15s} {:20s} {}".format(rule.endpoint, methods, rule))
+        line = urllib.parse.unquote("{:15s} {:25s} {}".format(rule.endpoint, methods, rule))
         output.append(line)
 
     return sorted(output)

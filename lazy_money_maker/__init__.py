@@ -7,9 +7,11 @@ import os
 from flask import (
     Flask,
     jsonify,
+    redirect,
     render_template,
     request,
     send_from_directory,
+    url_for,
 )
 
 from lazy_money_maker.robinhood import (
@@ -21,6 +23,8 @@ from lazy_money_maker.robinhood import (
 )
 
 from lazy_money_maker.utils.templating import list_routes
+
+from lazy_money_maker.utils.config import write_secrets
 
 def create_app(test_config=None):
     """create app"""
@@ -53,6 +57,22 @@ def create_app(test_config=None):
     def index(): # pylint: disable=unused-variable
         return render_template('index.html', routes=list_routes(app))
 
+    @app.route('/login', methods=['GET', 'POST'])
+    def login(): # pylint: disable=unused-variable
+        error = None
+
+        if request.method == 'POST':
+            try:
+                write_secrets('rh_account', {
+                    'username': request.form['username'],
+                    'password': request.form['password'],
+                })
+                return redirect(url_for('index'))
+            except RuntimeError:
+                error = 'error!'
+
+        return render_template('login.html', error=error)
+
     # NOTE: csv=false evaluates to truthy, only care about existence of `csv`
     #   param atm, but really should clear that up.
     #   expecting only `/positions?csv` or `/positions`.
@@ -76,10 +96,6 @@ def create_app(test_config=None):
     @app.route('/dividends')
     def dividends(): # pylint: disable=unused-variable
         return rh_dividends()
-
-    @app.route('/login')
-    def login(): # pylint: disable=unused-variable
-        return render_template('login.html')
 
     @app.route('/stylesheets/<path:path>')
     def send_stylesheet(path): # pylint: disable=unused-variable

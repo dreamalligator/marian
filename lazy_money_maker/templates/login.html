@@ -1,4 +1,17 @@
+{% include "head.html" %}
+
 <h1>Login</h1>
 
-<input type="text">
-<input type="password">
+<form method="post">
+  <input name="username" type="text" placeholder="username" value="{{ request.form.username }}" autofocus="true">
+  <input name="password" type="password" placeholder="password"value="{{ request.form.password }}" >
+  <input type="submit" value="Submit">
+</form>
+
+{% if error %}
+<div class="error-message">
+  {{ error }}
+</div>
+{% endif %}
+
+{% include "footer.html" %}
