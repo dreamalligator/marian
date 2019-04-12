@@ -1,5 +1,5 @@
 '''
-the Lazy Money Maker Flask application provides routing and RESTful API.
+the Lazy Money Maker Flask application
 '''
 
 import os

@@ -8,7 +8,7 @@ Follow these instructions to get the Lazy Money Maker application going.
 
 ### Dependencies
 
-All python dependencies are installed when you run `pipenv install`, but you're going to need `python3`, `pip3`, and `pipenv` on your machine before you can get to that step.
+All python dependencies are installed when you run `pipenv install`, but you're going to need `python3`, `pip3`, and [`pipenv`](https://github.com/pypa/pipenv) on your machine before you can get to that step.
 
 This is up to you. My personal setup has `python` and `pip` aliased to `python3` and `pip3` respectively. So, if you see this anywhere in the documentation know that I mean Python3.X.
 

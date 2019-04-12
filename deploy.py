@@ -1,7 +1,10 @@
 """deploy a fresh instance and get lazy."""
 
 import os.path
-import json
+# if I understand correctly, both standard json and simplejson are the same,
+# except that standard json is based on an older simplejson version and lagging,
+# while simplejson will be kept up to date with Flask.
+from flask import json
 import requests
 
 class Deploy():

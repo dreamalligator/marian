@@ -10,7 +10,6 @@ pytest = "*"
 
 [packages]
 flask = "*"
-flask-restful = "*"
 python-dotenv = "*"
 fast-arrow = "*"
 
