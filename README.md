@@ -1,23 +1,18 @@
 # Lazy Money Maker
 
-![build-status](https://travis-ci.org/nebulousdog/lazy_money_maker.svg?branch=master)
+[![build-status](https://travis-ci.org/nebulousdog/lazy_money_maker.svg?branch=master)][travis-link]
+[![coverage-status](https://coveralls.io/repos/github/nebulousdog/lazy_money_maker/badge.svg?branch=master)][coveralls-link]
+[![package-status](https://img.shields.io/pypi/v/lazy_money_maker.svg)][pypi-link]
+
+[travis-link]: https://travis-ci.com/nebulousdog/lazy_money_maker
+[coveralls-link]: https://coveralls.io/github/nebulousdog/lazy_money_maker?branch=master
+[pypi-link]: https://pypi.org/project/lazy_money_maker/
 
 ## Getting Started
 
 Follow these instructions to get the Lazy Money Maker application going.
 
 ### Dependencies
-
-All python dependencies are installed when you run `pipenv install`, but you're going to need `python3`, `pip3`, and [`pipenv`](https://github.com/pypa/pipenv) on your machine before you can get to that step.
-
-This is up to you. My personal setup has `python` and `pip` aliased to `python3` and `pip3` respectively. So, if you see this anywhere in the documentation know that I mean Python3.X.
-
-```bash
-alias python="python3"
-alias pip="pip3"
-```
-
-Similarly, I use the [`./install.sh`](https://github.com/nebulousdog/lazy_money_maker/blob/master/install.sh) script for my development, but if you're not on a Debian-based machine you'll have to change the steps to get there. Please feel free to [open an issue](https://github.com/nebulousdog/lazy_money_maker/issues) or [pull request](https://github.com/nebulousdog/lazy_money_maker/pulls) on getting this set up for any other environment!
 
 ```bash
 git clone git@github.com:nebulousdog/lazy_money_maker.git
@@ -27,15 +22,30 @@ cd ./lazy_money_maker
 ./install.sh
 ```
 
+#### A few personal dev notes
+
+All python dependencies are installed when you run `pipenv install`, but you're going to need `python3`, `pip3`, and [`pipenv`](https://github.com/pypa/pipenv) on your machine before you can get to that step. I'm not biased against Python2, but I'm going to be lazy about supporting it unless anyone asks for it.
+
+This too is up to you. My personal setup has `python` and `pip` aliased to `python3` and `pip3` respectively. So, if you see this anywhere in the documentation know that I mean Python3.X.
+
+```bash
+alias python="python3"
+alias pip="pip3"
+```
+
+Similarly, I use the [`./install.sh`](https://github.com/nebulousdog/lazy_money_maker/blob/master/install.sh) script for my development, but if you're not on a Debian-based machine you'll have to change the steps to get there.
+
+Please feel free to [open an issue](https://github.com/nebulousdog/lazy_money_maker/issues) or [pull request](https://github.com/nebulousdog/lazy_money_maker/pulls) on getting this set up for any other environment!
+
 ### Run
 
 There are two ways to get your username and password with Robinhood set up.
 
-Firstly, you can simply start the application and any route will redirect you to the login page.
+Firstly, you can simply start the application and any route will redirect you to the login page if a client has not been instantiated, and one is required. Flask by default runs on port 5000.
 
 ```bash
 pipenv run flask run
-firefox http://localhost:5000/login
+firefox http://localhost:5000 # or http://localhost:5000/login
 ```
 
 The second way is directly creating the `secrets.ini` file. There is an example one you can copy and edit the contents.
@@ -60,11 +70,12 @@ python ./deploy.py
 
 It is going to prompt you for an auth token. It will also be saved in the secrets file.
 
-I'd love to hear if anyone uses this and does this differently, or has requests to do it differently.
+I'd love to hear if anyone uses this and does this differently, or has a secure suggestion.
 
 ## References
 
 * https://github.com/westonplatter/fast_arrow
+* https://github.com/pallets/flask
 * https://api.robinhood.com/
 * https://github.com/sanko/Robinhood
 
