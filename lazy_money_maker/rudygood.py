@@ -4,6 +4,8 @@ Methods grouped becuase they all need a instantiated Fast Arrow client to refere
 
 from functools import wraps
 
+import requests
+
 from flask import (
     jsonify,
     redirect,
@@ -32,12 +34,17 @@ class RuddyGood():
     def instantiate_client(self):
         """start and memoize a RH connection via fast_arrow."""
 
-        if self.client is None:
-            print(f'authenticating....')
+        if self.client is None or self.client.authenticated is False:
+            print('authenticating....')
 
             secrets = read_secrets('rh_account')
             self.client = Client(username=secrets['username'], password=secrets['password'])
-            self.client.authenticate()
+
+            try:
+                self.client.authenticate()
+            except requests.exceptions.HTTPError as e:
+                print(e)
+                raise e
 
             print('done.')
 
@@ -178,10 +185,10 @@ class RuddyGood():
         def decorated_function(*args, **kwargs):
             try:
                 self.instantiate_client()
-            except FileNotFoundError as e:
-                print("BBQ", e)
+            except (FileNotFoundError, requests.exceptions.HTTPError) as e:
+                print(e)
 
-            if self.client is None:
+            if self.client is None or self.client.authenticated is False:
                 return redirect(url_for('login', next=request.url))
             return f(*args, **kwargs)
         return decorated_function
