@@ -2,19 +2,33 @@
 some helpers for the templates.
 '''
 
-import urllib
-
-def list_routes(app):
+def route_table(app):
     """list the implemented Flask app's API routes."""
 
-    output = []
+    output = {
+        'headers': [],
+        'routes': [],
+    }
+
+    i = 0
+
     for rule in app.url_map.iter_rules():
-        options = {}
-        for arg in rule.arguments:
-            options[arg] = f'[{arg}]'
+        info = {
+            'endpoint': rule.endpoint,
+            'methods': ','.join(sorted(rule.methods)),
+            'rule': rule,
+            # 'options': ','.join(sorted(rule.arguments)),
+            # 'defaults': rule.defaults,
+            # 'redirect_to': rule.redirect_to,
+        }
 
-        methods = ','.join(sorted(rule.methods))
-        line = urllib.parse.unquote("{:15s} {:25s} {}".format(rule.endpoint, methods, rule))
-        output.append(line)
+        if i == 0:
+            output['headers'] = info.keys()
 
-    return sorted(output)
+        output['routes'].append(info)
+
+        i += 1
+
+    output['routes'].sort(key=lambda route: str(route['rule']))
+
+    return output

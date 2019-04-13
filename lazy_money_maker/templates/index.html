@@ -2,10 +2,27 @@
 
 <h2>Routes</h2>
 
-<pre>
-{% for route in routes %}
-{{ route }}
-{% endfor %}
-</pre>
+<div class="routes">
+  <div class="route-row">
+    {% for header in route_table.headers %}
+    <div class="segment-cell">
+      <b>{{ header }}</b>
+    </div>
+    {% endfor %}
+  </div>
+  {% for route in route_table.routes %}
+  <div class="route-row">
+    <div class="segment-cell">
+      <pre>{{ route.endpoint }}</pre>
+    </div>
+    <div class="segment-cell">
+      <pre>{{ route.methods }}</pre>
+    </div>
+    <div class="segment-cell">
+      <a href="{{ route.rule }}">{{ route.rule }}</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 
 {% include "footer.html" %}

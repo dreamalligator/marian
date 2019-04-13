@@ -14,12 +14,19 @@ from flask import (
     url_for,
 )
 
-from lazy_money_maker.rudygood import RuddyGood
-from lazy_money_maker.utils.templating import list_routes
-from lazy_money_maker.utils.config import write_secrets
+from .rudygood import RuddyGood
+from .utils.templating import route_table
+from .utils.config import write_secrets
 
 def create_app(test_config=None):
-    """create app"""
+    """
+    basic factory.
+
+    allows multiple instances of the application, with
+    differing configs to be ran if need be.
+
+    or could be used in tests, hint hint.
+    """
 
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -50,21 +57,22 @@ def create_app(test_config=None):
 
     @app.route('/')
     def index(): # pylint: disable=unused-variable
-        return render_template('index.html', routes=list_routes(app))
+        return render_template('index.html', route_table=route_table(app))
 
     @app.route('/login', methods=['GET', 'POST'])
     def login(): # pylint: disable=unused-variable
         error = None
 
         if request.method == 'POST':
-            try:
-                write_secrets('rh_account', {
-                    'username': request.form['username'],
-                    'password': request.form['password'],
-                })
+            write_secrets('rh_account', {
+                'username': request.form['username'],
+                'password': request.form['password'],
+            })
+
+            if request.args.get('next') is None:
                 return redirect(url_for('index'))
-            except RuntimeError:
-                error = 'error!'
+
+            return redirect(request.args.get('next'))
 
         return render_template('login.html', error=error)
 
@@ -72,23 +80,28 @@ def create_app(test_config=None):
     #   param atm, but really should clear that up.
     #   expecting only `/positions?csv` or `/positions`.
     @app.route('/positions')
+    @rudy.login_required
     def positions(): # pylint: disable=unused-variable
         csv = request.args.get('csv') is not None
         return rudy.rh_positions(csv)
 
     @app.route('/collection/<tag>')
+    @rudy.login_required
     def collection(tag): # pylint: disable=unused-variable
         return rudy.raw_collection(tag)
 
     @app.route('/quote/<symbol>')
+    @rudy.login_required
     def quote(symbol): # pylint: disable=unused-variable
         return rudy.rh_quote(symbol)
 
     @app.route('/watchlist')
+    @rudy.login_required
     def watchlist(): # pylint: disable=unused-variable
         return rudy.rh_watchlist()
 
     @app.route('/dividends')
+    @rudy.login_required
     def dividends(): # pylint: disable=unused-variable
         return rudy.rh_dividends()
 

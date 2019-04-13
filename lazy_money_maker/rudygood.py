@@ -2,7 +2,14 @@
 Methods grouped becuase they all need a instantiated Fast Arrow client to reference.
 '''
 
-from flask import jsonify
+from functools import wraps
+
+from flask import (
+    jsonify,
+    redirect,
+    request,
+    url_for,
+)
 
 from fast_arrow import (
     Client,
@@ -13,16 +20,16 @@ from fast_arrow import (
     StockPosition,
 )
 
-from lazy_money_maker.utils.config import read_secrets
-from lazy_money_maker.utils.sheets import list_to_row
-from lazy_money_maker.utils.robinhood import rh_id_from_instrument_url
+from .utils.config import read_secrets
+from .utils.sheets import list_to_row
+from .utils.robinhood import rh_id_from_instrument_url
 
 class RuddyGood():
     def __init__(self, **kwargs):
         self.options = kwargs
         self.client = None
 
-    def rh_client(self):
+    def instantiate_client(self):
         """start and memoize a RH connection via fast_arrow."""
 
         if self.client is None:
@@ -39,7 +46,7 @@ class RuddyGood():
     def raw_dividends(self):
         """raw dividends via fast_arrow."""
 
-        return Dividend.all(self.rh_client())
+        return Dividend.all(self.client)
 
     def rh_dividends(self):
         """rh dividend infos formatted for personal use."""
@@ -51,7 +58,7 @@ class RuddyGood():
     def raw_positions(self):
         """raw robinhood positions."""
 
-        return StockPosition.all(self.rh_client())
+        return StockPosition.all(self.client)
 
     def raw_stock(self, symbol, attributes=None):
         """raw robinhood stock infos. not personal position on the stock.
@@ -59,7 +66,7 @@ class RuddyGood():
         if attributes is passed along, only return those attributes.
         """
 
-        stock = Stock.fetch(self.rh_client(), symbol)
+        stock = Stock.fetch(self.client, symbol)
 
         if attributes is not None:
             return {k: stock[k] for k in attributes}
@@ -69,7 +76,7 @@ class RuddyGood():
     def raw_stocks(self, symbols):
         """raw robinhood stock infos."""
 
-        stocks = Stock.all(self.rh_client(), symbols)
+        stocks = Stock.all(self.client, symbols)
 
         return stocks
 
@@ -81,7 +88,7 @@ class RuddyGood():
 
         instrument_data = {}
         for url in instrument_urls:
-            data = self.rh_client().get(url)
+            data = self.client.get(url)
             instrument_data[data['id']] = data
 
         formatted_positions = {}
@@ -132,7 +139,7 @@ class RuddyGood():
     def raw_collection(self, tag):
         """raw robinhood collection info via fast_arrow."""
 
-        return Collection.fetch_instruments_by_tag(self.rh_client(), tag)
+        return Collection.fetch_instruments_by_tag(self.client, tag)
 
     def rh_collection(self, tag):
         """rh collection. formatted for personal use"""
@@ -142,7 +149,7 @@ class RuddyGood():
     def raw_quote(self, symbol, attributes=None):
         """raw market price quote info via fast_arrow."""
 
-        quote = StockMarketdata.quote_by_symbol(self.rh_client(), symbol)
+        quote = StockMarketdata.quote_by_symbol(self.client, symbol)
 
         if attributes is not None:
             return {k: quote[k] for k in attributes}
@@ -165,3 +172,16 @@ class RuddyGood():
         """my watchlist. formatted position list."""
 
         return jsonify(self.raw_watchlist())
+
+    def login_required(self, f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            try:
+                self.instantiate_client()
+            except FileNotFoundError as e:
+                print("BBQ", e)
+
+            if self.client is None:
+                return redirect(url_for('login', next=request.url))
+            return f(*args, **kwargs)
+        return decorated_function
