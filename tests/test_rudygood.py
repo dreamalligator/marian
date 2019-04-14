@@ -1,4 +1,4 @@
-from lazy_money_maker.rudygood import RuddyGood
+from marian.rudygood import RuddyGood
 
 def test_rudygood():
     rudy = RuddyGood()

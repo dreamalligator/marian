@@ -1,4 +1,4 @@
-from lazy_money_maker.utils.sheets import list_to_row
+from marian.utils.sheets import list_to_row
 
 def test_list_to_row():
     expected_row = 'junk,None,1,True,False,https://charliecat.net\n'

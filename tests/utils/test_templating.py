@@ -1,6 +1,6 @@
 from flask import Flask
 
-from lazy_money_maker.utils.routes import list_routes
+from marian.utils.routes import list_routes
 
 def get_app():
     """simple Flask app stub"""

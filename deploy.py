@@ -1,4 +1,4 @@
-"""deploy a fresh instance and get lazy."""
+"""deploy a fresh instance."""
 
 import os.path
 # if I understand correctly, both standard json and simplejson are the same,
@@ -11,7 +11,7 @@ def deploy_droplet(token=retrieve_token()):
     """deploy a new droplet."""
 
     droplet_info = {
-        'name': 'lazy',
+        'name': 'marian',
         'region': 'sfo2',
         'size': '4gb',
         'image': 'ghost-18-04',

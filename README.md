@@ -1,22 +1,22 @@
-# Lazy Money Maker
+# Marian
 
-[![build-status](https://travis-ci.org/nebulousdog/lazy_money_maker.svg?branch=master)][travis-link]
-[![coverage-status](https://coveralls.io/repos/github/nebulousdog/lazy_money_maker/badge.svg?branch=master)][coveralls-link]
-[![package-status](https://img.shields.io/pypi/v/lazy_money_maker.svg)][pypi-link]
+[![build-status](https://travis-ci.org/nebulousdog/marian.svg?branch=master)][travis-link]
+[![coverage-status](https://coveralls.io/repos/github/nebulousdog/marian/badge.svg?branch=master)][coveralls-link]
+[![package-status](https://img.shields.io/pypi/v/marian.svg)][pypi-link]
 
-[travis-link]: https://travis-ci.com/nebulousdog/lazy_money_maker
-[coveralls-link]: https://coveralls.io/github/nebulousdog/lazy_money_maker?branch=master
-[pypi-link]: https://pypi.org/project/lazy_money_maker/
+[travis-link]: https://travis-ci.com/nebulousdog/marian
+[coveralls-link]: https://coveralls.io/github/nebulousdog/marian?branch=master
+[pypi-link]: https://pypi.org/project/marian/
 
 ## Getting Started
 
-Follow these instructions to get the Lazy Money Maker application going.
+Follow these instructions to get the Marian application going.
 
 ### Dependencies
 
 ```bash
-git clone git@github.com:nebulousdog/lazy_money_maker.git
-cd ./lazy_money_maker
+git clone git@github.com:nebulousdog/marian.git
+cd ./marian
 # the install script includes `pipenv install --dev`
 # likely need to make the install script executable with `chmod +x ./install.sh`
 ./install.sh
@@ -33,9 +33,9 @@ alias python="python3"
 alias pip="pip3"
 ```
 
-Similarly, I use the [`./install.sh`](https://github.com/nebulousdog/lazy_money_maker/blob/master/install.sh) script for my development, but if you're not on a Debian-based machine you'll have to change the steps to get there.
+Similarly, I use the [`./install.sh`](https://github.com/nebulousdog/marian/blob/master/install.sh) script for my development, but if you're not on a Debian-based machine you'll have to change the steps to get there.
 
-Please feel free to [open an issue](https://github.com/nebulousdog/lazy_money_maker/issues) or [pull request](https://github.com/nebulousdog/lazy_money_maker/pulls) on getting this set up for any other environment!
+Please feel free to [open an issue](https://github.com/nebulousdog/marian/issues) or [pull request](https://github.com/nebulousdog/marian/pulls) on getting this set up for any other environment!
 
 ### Run
 
