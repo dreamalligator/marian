@@ -35,10 +35,12 @@ class RuddyGood():
         """start and memoize a RH connection via fast_arrow."""
 
         if self.client is None or self.client.authenticated is False:
-            print('authenticating....')
+            print('setting up client...')
 
             secrets = read_secrets('rh_account')
             self.client = Client(username=secrets['username'], password=secrets['password'])
+
+            print('authenticating....')
 
             try:
                 self.client.authenticate()
@@ -47,8 +49,6 @@ class RuddyGood():
                 raise e
 
             print('done.')
-
-        return self.client
 
     def raw_dividends(self):
         """raw dividends via fast_arrow."""

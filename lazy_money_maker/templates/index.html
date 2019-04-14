@@ -4,13 +4,13 @@
 
 <div class="routes">
   <div class="route-row">
-    {% for header in route_table.headers %}
+    {% for header in route_info.headers %}
     <div class="segment-cell">
       <b>{{ header }}</b>
     </div>
     {% endfor %}
   </div>
-  {% for route in route_table.routes %}
+  {% for route in route_info.routes %}
   <div class="route-row">
     <div class="segment-cell">
       <pre>{{ route.endpoint }}</pre>

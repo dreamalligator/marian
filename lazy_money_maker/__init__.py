@@ -15,7 +15,7 @@ from flask import (
 )
 
 from .rudygood import RuddyGood
-from .utils.templating import route_table
+from .utils.routes import route_info
 from .utils.config import write_secrets
 
 def create_app(test_config=None):
@@ -28,7 +28,8 @@ def create_app(test_config=None):
     or could be used in tests, hint hint.
     """
 
-    # create and configure the app
+    print('Maid Mariam started.')
+
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -48,16 +49,14 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # jinja templates
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
 
-    # rude boy
     rudy = RuddyGood()
 
     @app.route('/')
     def index(): # pylint: disable=unused-variable
-        return render_template('index.html', route_table=route_table(app))
+        return render_template('index.html', route_info=route_info(app))
 
     @app.route('/login', methods=['GET', 'POST'])
     def login(): # pylint: disable=unused-variable

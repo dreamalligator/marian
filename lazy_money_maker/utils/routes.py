@@ -2,7 +2,7 @@
 some helpers for the templates.
 '''
 
-def route_table(app):
+def route_info(app):
     """list the implemented Flask app's API routes."""
 
     output = {
