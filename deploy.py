@@ -7,135 +7,124 @@ import os.path
 from flask import json
 import requests
 
-class Deploy():
-    '''
-    Digital Ocean is our friend.
-    '''
+def deploy_droplet(token=retrieve_token()):
+    """deploy a new droplet."""
 
-    @staticmethod
-    def get_droplet_id():
-        """get droplet id from cached info, prevents unnecessary requests."""
+    droplet_info = {
+        'name': 'lazy',
+        'region': 'sfo2',
+        'size': '4gb',
+        'image': 'ghost-18-04',
+        'ssh_keys': get_key_fingerprints(token)
+    }
 
-        cached_droplet_info_file = 'droplet_info.json'
+    print('deploying new droplet...')
+    url = 'https://api.digitalocean.com/v2/droplets'
+    request = requests.post(url, headers=headers(token), params=droplet_info)
 
-        with open(cached_droplet_info_file, 'r') as info_f:
-            droplet_info = json.load(info_f)
-            return droplet_info['id']
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code != requests.codes.accepted:
+        print('Something went wrong. ' + request.json()['message'])
+        return
 
-    @staticmethod
-    def get_droplet_ip():
-        """get droplet ip from cache."""
+    print('Deployed! 🐈')
 
-        cached_droplet_info_file = 'droplet_info.json'
+def retrieve_token():
+    """
+    check if have a saved Digital Ocean API token, or retreive one.
+    """
 
-        with open(cached_droplet_info_file, 'r') as info_f:
-            droplet_info = json.load(info_f)
-            return droplet_info['networks']['v4'][0]['ip_address']
+    token_file_name = 'DIGITALOCEAN_TOKEN'
 
-    @staticmethod
-    def headers(token):
-        """heads up."""
+    if os.path.isfile(token_file_name):
+        print('token found...')
 
-        headers_obj = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
+        with open(token_file_name, 'r') as token_f:
+            digitalocean_token = token_f.read().replace('\n', '')
+    else:
+        digitalocean_token = input(
+            '''Digital Ocean API token not found, retrieve your token from digitalocean.
+visit https://cloud.digitalocean.com/account/api/tokens.
+enter token: '''
+        )
 
-        return headers_obj
+        with open(token_file_name, 'w') as token_f:
+            token_f.write(digitalocean_token)
 
-    @staticmethod
-    def deploy_droplet(token):
-        """deploy a new droplet"""
+        print('token saved to DIGITALOCEAN_TOKEN.')
 
-        droplet_info = {
-            'name': 'lazy',
-            'region': 'sfo2',
-            'size': '4gb',
-            'image': 'ghost-18-04',
-            'ssh_keys': get_key_fingerprints(token)
-        }
+    return digitalocean_token
 
-        print('deploying new droplet...')
-        url = 'https://api.digitalocean.com/v2/droplets'
-        request = requests.post(url, headers=headers(token), params=droplet_info)
+def get_droplet_id():
+    """get droplet id from cached info, prevents unnecessary requests."""
 
-        # see https://github.com/requests/requests/blob/master/requests/status_codes.py
-        # pylint: disable=E1101
-        if request.status_code != requests.codes.accepted:
-            print('Something went wrong. ' + request.json()['message'])
-            return
+    cached_droplet_info_file = 'droplet_info.json'
 
-        print('Deployed! 🐈')
+    with open(cached_droplet_info_file, 'r') as info_f:
+        droplet_info = json.load(info_f)
+        return droplet_info['id']
 
-    @staticmethod
-    def retrieve_token():
-        """check if have a saved Digital Ocean API token, or retreive one."""
+def get_droplet_ip():
+    """get droplet ip from cache."""
 
-        token_file_name = 'DIGITALOCEAN_TOKEN'
+    cached_droplet_info_file = 'droplet_info.json'
 
-        if os.path.isfile(token_file_name):
-            print('token found...')
+    with open(cached_droplet_info_file, 'r') as info_f:
+        droplet_info = json.load(info_f)
+        return droplet_info['networks']['v4'][0]['ip_address']
 
-            with open(token_file_name, 'r') as token_f:
-                digitalocean_token = token_f.read().replace('\n', '')
-        else:
-            digitalocean_token = input(
-                '''Digital Ocean API token not found, retrieve your token from digitalocean.
-    visit https://cloud.digitalocean.com/account/api/tokens.
-    enter token: '''
-            )
+def headers(token):
+    """heads up."""
 
-            with open(token_file_name, 'w') as token_f:
-                token_f.write(digitalocean_token)
+    headers_obj = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
 
-            print('token saved to DIGITALOCEAN_TOKEN.')
+    return headers_obj
 
-        return digitalocean_token
+def refresh_droplet_cache(token):
+    """
+    check if have saved catcobralizard droplet info, or retrieve it.
+    see https://cloud.digitalocean.com/account/api/tokens.
+    """
 
-    @staticmethod
-    def refresh_droplet_cache(token):
-        """
-        check if have saved catcobralizard droplet info, or retrieve it.
-        see https://cloud.digitalocean.com/account/api/tokens.
-        """
+    cached_droplet_info_file = 'droplet_info.json'
 
-        cached_droplet_info_file = 'droplet_info.json'
+    print('attempting to retrieve catcobralizard info...')
 
-        print('attempting to retrieve catcobralizard info...')
+    request = requests.get('https://api.digitalocean.com/v2/droplets', headers=headers(token))
 
-        request = requests.get('https://api.digitalocean.com/v2/droplets', headers=headers(token))
+    refreshed = False
+    for droplet in request.json()['droplets']:
+        if droplet['name'] == 'catcobralizard':
+            with open(cached_droplet_info_file, 'w') as info_f:
+                info_f.write(json.dumps(droplet))
+            droplet_id = droplet['id']
+            print(f'saving info for droplet {droplet_id}...')
+            refreshed = True
+            break
 
-        refreshed = False
-        for droplet in request.json()['droplets']:
-            if droplet['name'] == 'catcobralizard':
-                with open(cached_droplet_info_file, 'w') as info_f:
-                    info_f.write(json.dumps(droplet))
-                droplet_id = droplet['id']
-                print(f'saving info for droplet {droplet_id}...')
-                refreshed = True
-                break
+    if not refreshed:
+        print('no catcobralizard droplets found.')
 
-        if not refreshed:
-            print('no catcobralizard droplets found.')
+def get_key_fingerprints(token):
+    """
+    Using ssh_key fingerprints because array of ids seems broken on Digital
+    Ocean's side.
+    """
 
-    @staticmethod
-    def get_key_fingerprints(token):
-        """
-        Using ssh_key fingerprints because array of ids seems broken on Digital
-        Ocean's side.
-        """
+    request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
 
-        request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
+    return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
 
-        return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
+def get_key_ids(token):
+    """get a key to embed when making a new droplet."""
 
-    @staticmethod
-    def get_key_ids(token):
-        """get a key to embed when making a new droplet."""
+    request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
 
-        request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
-
-        return list(map(lambda key: key['id'], request.json()['ssh_keys']))
+    return list(map(lambda key: key['id'], request.json()['ssh_keys']))
 
 if __name__ == '__main__':
-    refresh_droplet_cache(retrieve_token())
+    deploy_droplet()
