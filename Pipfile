@@ -12,6 +12,7 @@ pytest = "*"
 flask = "*"
 python-dotenv = "*"
 fast-arrow = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.6"
