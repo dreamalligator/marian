@@ -9,7 +9,7 @@ def boolean_query_param(request, param_name, convert_none=None):
     '''
 
     raw_param = request.args.get(param_name)
-    if raw_param is None:
+    if raw_param == 'none':
         if convert_none is None:
             return None
         return convert_none
