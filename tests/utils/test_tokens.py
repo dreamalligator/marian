@@ -1,17 +1,9 @@
 import string
-import pytest
-from marian import create_app
 from marian.utils.tokens import (
     create_secret_key,
     encode_auth_token,
     decode_auth_token,
 )
-
-@pytest.fixture
-def app():
-    return create_app({
-        'SECRET_KEY': 'sh3rw00d',
-    })
 
 def test_create_secret_key():
     """

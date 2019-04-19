@@ -1,6 +1,5 @@
 """digital ocean deploy utils"""
 
-from secrets import token_urlsafe
 import os.path
 # if I understand correctly, both standard json and simplejson are the same,
 # except that standard json is based on an older simplejson version and lagging,

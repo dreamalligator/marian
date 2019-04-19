@@ -35,6 +35,8 @@ Run
 
 To get your username and password with Robinhood set up, start the application (:code:`pipenv run flask run`) and any route will redirect you to the login page (:code:`http://localhost:5000/login`) if a client has not been instantiated, and one is required.
 
+For running in production environment, use :code:`pipenv run sh ./serve.sh`. This uses `:code:`gunicorn` <https://github.com/benoitc/gunicorn>`_ which is better for production environment.
+
 Deploy
 ======
 

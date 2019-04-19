@@ -1,8 +1,7 @@
 import flask
 from marian.utils.parse import boolean_query_param
 
-def test_boolean_query_param():
-    app = flask.Flask(__name__)
+def test_boolean_query_param(app):
     url = '/path?none_param=none&true_param=true&false_param=false'
     with app.test_request_context(url):
         assert boolean_query_param(flask.request, 'none_param') is None
