@@ -3,15 +3,9 @@
 <h1>Login</h1>
 
 <form method="post">
-  <input name="username" type="text" placeholder="username" value="{{ request.form.username }}" autofocus="true">
-  <input name="password" type="password" placeholder="password"value="{{ request.form.password }}" >
+  <input name="username" placeholder="username" value="{{ request.form.username }}" autocomplete="username" type="text" autofocus="true">
+  <input name="password" placeholder="password" value="{{ request.form.password }}" autocomplete="current-password" type="password">
   <input type="submit" value="Submit">
 </form>
-
-{% if error %}
-<div class="error-message">
-  {{ error }}
-</div>
-{% endif %}
 
 {% include "footer.html" %}

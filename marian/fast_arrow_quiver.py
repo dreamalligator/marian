@@ -158,7 +158,7 @@ class FastArrowQuiver():
     def fa_quote(self, symbol, attributes=None):
         """raw market price quote info via fast_arrow."""
 
-        quote = StockMarketdata.quote_by_symbol(self.client, symbol)
+        quote = StockMarketdata.historical_quote_by_symbol(self.client, symbol)
 
         if attributes is not None:
             return {k: quote[k] for k in attributes}

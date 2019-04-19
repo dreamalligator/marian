@@ -61,8 +61,6 @@ def create_app(test_config=None):
 
     @app.route('/login', methods=['GET', 'POST'])
     def login(): # pylint: disable=unused-variable
-        error = None
-
         if request.method == 'POST':
             quiver.initialize_client(
                 username=request.form['username'],
@@ -74,7 +72,7 @@ def create_app(test_config=None):
 
             return redirect(request.args.get('next'))
 
-        return render_template('login.html', error=error)
+        return render_template('login.html')
 
     @app.route('/positions')
     @quiver.login_required
@@ -113,5 +111,10 @@ def create_app(test_config=None):
     @app.route('/images/<path:path>')
     def send_img(path): # pylint: disable=unused-variable
         return send_from_directory('images', path)
+
+    @app.route('/logout')
+    def logout(): # pylint: disable=unused-variable
+        session.clear()
+        return redirect(url_for('index'))
 
     return app
