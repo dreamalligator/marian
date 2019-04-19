@@ -2,21 +2,23 @@
 the Marian Flask application
 '''
 
+import urllib
 import os
 
 from flask import (
     Flask,
-    jsonify,
-    redirect,
-    render_template,
-    request,
     send_from_directory,
+    render_template,
+    redirect,
+    request,
+    session,
     url_for,
 )
 
-from .rudygood import RuddyGood
+from .fast_arrow_quiver import FastArrowQuiver
 from .utils.routes import route_info
-from .utils.config import write_secrets
+from .utils.parse import boolean_query_param
+from .utils.tokens import create_secret_key
 
 def create_app(test_config=None):
     """
@@ -28,13 +30,9 @@ def create_app(test_config=None):
     or could be used in tests, hint hint.
     """
 
-    print('Maid Mariam started.')
+    print('Maid Marian started.')
 
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'marian.sqlite'),
-    )
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -42,6 +40,9 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
+
+    if app.config.get('SECRET_KEY') is None:
+        app.config['SECRET_KEY'] = create_secret_key()
 
     # ensure the instance folder exists
     try:
@@ -52,7 +53,7 @@ def create_app(test_config=None):
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
 
-    rudy = RuddyGood()
+    quiver = FastArrowQuiver()
 
     @app.route('/')
     def index(): # pylint: disable=unused-variable
@@ -63,10 +64,10 @@ def create_app(test_config=None):
         error = None
 
         if request.method == 'POST':
-            write_secrets('rh_account', {
-                'username': request.form['username'],
-                'password': request.form['password'],
-            })
+            quiver.initialize_client(
+                username=request.form['username'],
+                password=request.form['password'],
+            )
 
             if request.args.get('next') is None:
                 return redirect(url_for('index'))
@@ -75,34 +76,31 @@ def create_app(test_config=None):
 
         return render_template('login.html', error=error)
 
-    # NOTE: csv=false evaluates to truthy, only care about existence of `csv`
-    #   param atm, but really should clear that up.
-    #   expecting only `/positions?csv` or `/positions`.
     @app.route('/positions')
-    @rudy.login_required
+    @quiver.login_required
     def positions(): # pylint: disable=unused-variable
-        csv = request.args.get('csv') is not None
-        return rudy.rh_positions(csv)
+        csv = boolean_query_param(request, 'csv', True)
+        return quiver.rh_positions(csv)
 
     @app.route('/collection/<tag>')
-    @rudy.login_required
+    @quiver.login_required
     def collection(tag): # pylint: disable=unused-variable
-        return rudy.raw_collection(tag)
+        return quiver.fa_collection(tag)
 
     @app.route('/quote/<symbol>')
-    @rudy.login_required
+    @quiver.login_required
     def quote(symbol): # pylint: disable=unused-variable
-        return rudy.rh_quote(symbol)
+        return quiver.rh_quote(symbol)
 
     @app.route('/watchlist')
-    @rudy.login_required
+    @quiver.login_required
     def watchlist(): # pylint: disable=unused-variable
-        return rudy.rh_watchlist()
+        return quiver.rh_watchlist()
 
     @app.route('/dividends')
-    @rudy.login_required
+    @quiver.login_required
     def dividends(): # pylint: disable=unused-variable
-        return rudy.rh_dividends()
+        return quiver.rh_dividends()
 
     @app.route('/stylesheets/<path:path>')
     def send_stylesheet(path): # pylint: disable=unused-variable

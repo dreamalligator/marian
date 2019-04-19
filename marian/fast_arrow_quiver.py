@@ -10,6 +10,7 @@ from flask import (
     jsonify,
     redirect,
     request,
+    session,
     url_for,
 )
 
@@ -22,35 +23,36 @@ from fast_arrow import (
     StockPosition,
 )
 
-from .utils.config import read_secrets
 from .utils.sheets import list_to_row
 from .utils.robinhood import rh_id_from_instrument_url
 
-class RuddyGood():
+class FastArrowQuiver():
     def __init__(self, **kwargs):
         self.options = kwargs
         self.client = None
 
-    def instantiate_client(self):
+    def initialize_client(self, username, password):
         """start and memoize a RH connection via fast_arrow."""
 
         if self.client is None or self.client.authenticated is False:
             print('setting up client...')
 
-            secrets = read_secrets('rh_account')
-            self.client = Client(username=secrets['username'], password=secrets['password'])
+            self.client = Client(username=username, password=password)
 
             print('authenticating....')
 
             try:
                 self.client.authenticate()
             except requests.exceptions.HTTPError as e:
-                print(e)
+                print('authentication failed.')
                 raise e
+
+            session['rh_username'] = username
+            session['rh_password'] = password
 
             print('done.')
 
-    def raw_dividends(self):
+    def fa_dividends(self):
         """raw dividends via fast_arrow."""
 
         return Dividend.all(self.client)
@@ -58,16 +60,16 @@ class RuddyGood():
     def rh_dividends(self):
         """rh dividend infos formatted for personal use."""
 
-        dividends = self.raw_dividends()
+        dividends = self.fa_dividends()
 
         return jsonify(dividends)
 
-    def raw_positions(self):
+    def fa_positions(self):
         """raw robinhood positions."""
 
         return StockPosition.all(self.client)
 
-    def raw_stock(self, symbol, attributes=None):
+    def fa_stock(self, symbol, attributes=None):
         """raw robinhood stock infos. not personal position on the stock.
 
         if attributes is passed along, only return those attributes.
@@ -80,7 +82,7 @@ class RuddyGood():
 
         return stock
 
-    def raw_stocks(self, symbols):
+    def fa_stocks(self, symbols):
         """raw robinhood stock infos."""
 
         stocks = Stock.all(self.client, symbols)
@@ -90,7 +92,7 @@ class RuddyGood():
     def rh_positions(self, csv):
         """my portfolio positions. formatted for personal use in Google Sheets."""
 
-        positions = self.raw_positions()
+        positions = self.fa_positions()
         instrument_urls = list(map(lambda p: p['instrument'], positions))
 
         instrument_data = {}
@@ -114,7 +116,7 @@ class RuddyGood():
             for k in ['simple_name', 'symbol', 'type']:
                 item[k] = data[k]
 
-            quote = self.raw_quote(item['symbol'])
+            quote = self.fa_quote(item['symbol'])
 
             for k in [
                     'adjusted_previous_close',
@@ -143,7 +145,7 @@ class RuddyGood():
 
         return jsonify(formatted_positions)
 
-    def raw_collection(self, tag):
+    def fa_collection(self, tag):
         """raw robinhood collection info via fast_arrow."""
 
         return Collection.fetch_instruments_by_tag(self.client, tag)
@@ -151,9 +153,9 @@ class RuddyGood():
     def rh_collection(self, tag):
         """rh collection. formatted for personal use"""
 
-        return jsonify(self.raw_collection(tag))
+        return jsonify(self.fa_collection(tag))
 
-    def raw_quote(self, symbol, attributes=None):
+    def fa_quote(self, symbol, attributes=None):
         """raw market price quote info via fast_arrow."""
 
         quote = StockMarketdata.quote_by_symbol(self.client, symbol)
@@ -166,29 +168,31 @@ class RuddyGood():
     def rh_quote(self, symbol):
         """formatted price quote infos for personal use."""
 
-        quote = self.raw_quote(symbol, [
+        quote = self.fa_quote(symbol, [
             "last_trade_price"
         ])
 
         return jsonify(quote)
 
-    def raw_watchlist(self):
+    def fa_watchlist(self):
         """raw watchlist infos."""
 
     def rh_watchlist(self):
         """my watchlist. formatted position list."""
 
-        return jsonify(self.raw_watchlist())
+        return jsonify(self.fa_watchlist())
 
     def login_required(self, f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             try:
-                self.instantiate_client()
-            except (FileNotFoundError, requests.exceptions.HTTPError) as e:
-                print(e)
-
-            if self.client is None or self.client.authenticated is False:
+                self.initialize_client(
+                    username=session.get('rh_username'),
+                    password=session.get('rh_password'),
+                )
+            except requests.exceptions.HTTPError:
                 return redirect(url_for('login', next=request.url))
+
             return f(*args, **kwargs)
+
         return decorated_function

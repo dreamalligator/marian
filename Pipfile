@@ -7,6 +7,10 @@ verify_ssl = true
 pylint = "*"
 pylint-quotes = "*"
 pytest = "*"
+httpbin = "*"
+pytest-httpbin = "*"
+sphinx = "*"
+pytest-cov = "*"
 
 [packages]
 flask = "*"
