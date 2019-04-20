@@ -4,7 +4,9 @@ the Marian Flask application
 
 import urllib
 import os
-
+import inspect
+from functools import wraps
+import requests
 from flask import (
     Flask,
     send_from_directory,
@@ -14,11 +16,11 @@ from flask import (
     session,
     url_for,
 )
-
 from .fast_arrow_quiver import FastArrowQuiver
 from .utils.routes import route_info
 from .utils.parse import boolean_query_param
 from .utils.tokens import create_secret_key
+from .utils.strings import hlt
 
 def create_app(test_config=None):
     """
@@ -30,7 +32,10 @@ def create_app(test_config=None):
     or could be used in tests, hint hint.
     """
 
-    print('Maid Marian started.')
+    print('')
+    print(hlt('Maid Marian started.'))
+    print('https://github.com/nebulousdog/marian')
+    print('')
 
     app = Flask(__name__, instance_relative_config=True)
 
@@ -74,32 +79,6 @@ def create_app(test_config=None):
 
         return render_template('login.html')
 
-    @app.route('/positions')
-    @quiver.login_required
-    def positions(): # pylint: disable=unused-variable
-        csv = boolean_query_param(request, 'csv', True)
-        return quiver.rh_positions(csv)
-
-    @app.route('/collection/<tag>')
-    @quiver.login_required
-    def collection(tag): # pylint: disable=unused-variable
-        return quiver.fa_collection(tag)
-
-    @app.route('/quote/<symbol>')
-    @quiver.login_required
-    def quote(symbol): # pylint: disable=unused-variable
-        return quiver.rh_quote(symbol)
-
-    @app.route('/watchlist')
-    @quiver.login_required
-    def watchlist(): # pylint: disable=unused-variable
-        return quiver.rh_watchlist()
-
-    @app.route('/dividends')
-    @quiver.login_required
-    def dividends(): # pylint: disable=unused-variable
-        return quiver.rh_dividends()
-
     @app.route('/stylesheets/<path:path>')
     def send_stylesheet(path): # pylint: disable=unused-variable
         return send_from_directory('stylesheets', path)
@@ -116,5 +95,28 @@ def create_app(test_config=None):
     def logout(): # pylint: disable=unused-variable
         session.clear()
         return redirect(url_for('index'))
+
+    def login_required(self, f):
+        """use saved session info to authenticate"""
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            print('!!!', session.get('rh_username'), session)
+            print('new methods at this point?', self)
+            try:
+                self.initialize_client(
+                    username=session.get('rh_username'),
+                    password=session.get('rh_password'),
+                )
+            except requests.exceptions.HTTPError:
+                return redirect(url_for('login', next=request.url))
+
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    @app.route('/test')
+    @login_required
+    def my_test_route(): # pylint: disable=unused-variable
+        quiver.user.fetch() # pylint: disable=maybe-no-member
 
     return app

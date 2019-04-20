@@ -3,33 +3,79 @@ Methods grouped becuase they all need a instantiated Fast Arrow client to refere
 '''
 
 from functools import wraps
-
+import inspect
 import requests
-
-from flask import (
-    jsonify,
-    redirect,
-    request,
-    session,
-    url_for,
+import fast_arrow
+from flask import session
+from .utils.strings import (
+    hlt,
+    warn,
+    snake_case,
 )
-
-from fast_arrow import (
-    Client,
-    Collection,
-    Dividend,
-    Stock,
-    StockMarketdata,
-    StockPosition,
-)
-
-from .utils.sheets import list_to_row
-from .utils.robinhood import rh_id_from_instrument_url
 
 class FastArrowQuiver():
+    @staticmethod
+    def resources():
+        return [
+            fast_arrow.Account,
+            fast_arrow.Collection,
+            fast_arrow.Dividend,
+            fast_arrow.Option,
+            fast_arrow.OptionChain,
+            fast_arrow.OptionEvent,
+            fast_arrow.OptionMarketdata,
+            fast_arrow.OptionOrder,
+            fast_arrow.OptionPosition,
+            fast_arrow.Portfolio,
+            fast_arrow.Stock,
+            fast_arrow.StockMarketdata,
+            fast_arrow.StockOrder,
+            fast_arrow.StockPosition,
+            fast_arrow.User,
+        ]
+
     def __init__(self, **kwargs):
         self.options = kwargs
         self.client = None
+
+        for resource in self.resources():
+            self.add_fast_arrow_resource(resource)
+
+    def add_fast_arrow_resource(self, resource):
+        """
+        attach a fast_arrow resource class as a class-attribute on the
+        FastArrowQuiver instance. each resource's classmethod is decorated to
+        automatically passed in the client defined on this instance.
+        """
+
+        resource_name = snake_case(resource.__name__)
+        if hasattr(self, resource_name):
+            print(f'attempting to overwrite resource {warn(resource_name)}.')
+            raise AttributeError
+
+        print(f'dynamically adding {hlt(resource_name)} resource...')
+        setattr(self, resource_name, resource)
+        quiver_resource = getattr(self, resource_name)
+
+        member_tuples = inspect.getmembers(resource, predicate=inspect.ismethod)
+        for resource_method_name, resource_method in member_tuples:
+            print(f'  enhancing {hlt("#" + resource_method_name)}...')
+
+            setattr(quiver_resource, resource_method_name, self.include_client(resource_method))
+            print('  ' + hlt(resource_name + '#' + resource_method_name) + ' attached.')
+
+    def include_client(self, member_func):
+        """
+        this decorator prefills in the first client parameter with the current
+        FastArrowQuiver instance's memoized client.
+        """
+
+        @wraps(member_func)
+        def decorated_function(*args, **kwargs):
+            print("BBQCITY", self)
+            return member_func(client=self.client, *args, **kwargs)
+
+        return decorated_function
 
     def initialize_client(self, username, password):
         """start and memoize a RH connection via fast_arrow."""
@@ -37,7 +83,7 @@ class FastArrowQuiver():
         if self.client is None or self.client.authenticated is False:
             print('setting up client...')
 
-            self.client = Client(username=username, password=password)
+            self.client = fast_arrow.Client(username=username, password=password)
 
             print('authenticating....')
 
@@ -51,148 +97,5 @@ class FastArrowQuiver():
             session['rh_password'] = password
 
             print('done.')
-
-    def fa_dividends(self):
-        """raw dividends via fast_arrow."""
-
-        return Dividend.all(self.client)
-
-    def rh_dividends(self):
-        """rh dividend infos formatted for personal use."""
-
-        dividends = self.fa_dividends()
-
-        return jsonify(dividends)
-
-    def fa_positions(self):
-        """raw robinhood positions."""
-
-        return StockPosition.all(self.client)
-
-    def fa_stock(self, symbol, attributes=None):
-        """raw robinhood stock infos. not personal position on the stock.
-
-        if attributes is passed along, only return those attributes.
-        """
-
-        stock = Stock.fetch(self.client, symbol)
-
-        if attributes is not None:
-            return {k: stock[k] for k in attributes}
-
-        return stock
-
-    def fa_stocks(self, symbols):
-        """raw robinhood stock infos."""
-
-        stocks = Stock.all(self.client, symbols)
-
-        return stocks
-
-    def rh_positions(self, csv):
-        """my portfolio positions. formatted for personal use in Google Sheets."""
-
-        positions = self.fa_positions()
-        instrument_urls = list(map(lambda p: p['instrument'], positions))
-
-        instrument_data = {}
-        for url in instrument_urls:
-            data = self.client.get(url)
-            instrument_data[data['id']] = data
-
-        formatted_positions = {}
-        for position in positions:
-            if float(position['quantity']) == 0.0:
-                continue
-
-            item = {}
-
-            for k in ['average_buy_price', 'created_at', 'quantity']:
-                item[k] = position[k]
-
-            rh_id = rh_id_from_instrument_url(position['instrument'])
-
-            data = instrument_data[rh_id]
-            for k in ['simple_name', 'symbol', 'type']:
-                item[k] = data[k]
-
-            quote = self.fa_quote(item['symbol'])
-
-            for k in [
-                    'adjusted_previous_close',
-                    'ask_price',
-                    'bid_price',
-                    'last_trade_price',
-                    'last_extended_hours_trade_price',
-                    'last_trade_price',
-                    'previous_close',
-                ]:
-                item[k] = quote[k]
-
-            formatted_positions[item['symbol']] = item
-
-        if csv is not False:
-            row = ''
-            i = 0
-            for item in list(formatted_positions.values()):
-                if i == 0:
-                    row += list_to_row(item.keys())
-
-                row += list_to_row(item.values())
-                i += 1
-
-            return row
-
-        return jsonify(formatted_positions)
-
-    def fa_collection(self, tag):
-        """raw robinhood collection info via fast_arrow."""
-
-        return Collection.fetch_instruments_by_tag(self.client, tag)
-
-    def rh_collection(self, tag):
-        """rh collection. formatted for personal use"""
-
-        return jsonify(self.fa_collection(tag))
-
-    def fa_quote(self, symbol, attributes=None):
-        """raw market price quote info via fast_arrow."""
-
-        quote = StockMarketdata.historical_quote_by_symbol(self.client, symbol)
-
-        if attributes is not None:
-            return {k: quote[k] for k in attributes}
-
-        return quote
-
-    def rh_quote(self, symbol):
-        """formatted price quote infos for personal use."""
-
-        quote = self.fa_quote(symbol, [
-            "last_trade_price"
-        ])
-
-        return jsonify(quote)
-
-    def fa_watchlist(self):
-        """raw watchlist infos."""
-
-    def rh_watchlist(self):
-        """my watchlist. formatted position list."""
-
-        return jsonify(self.fa_watchlist())
-
-    def login_required(self, f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            try:
-                self.initialize_client(
-                    username=session.get('rh_username'),
-                    password=session.get('rh_password'),
-                )
-            except requests.exceptions.HTTPError:
-                return redirect(url_for('login', next=request.url))
-
-            return f(*args, **kwargs)
-
-        return decorated_function
+        else:
+            print('didnt need to initialize client. one already exists.')
