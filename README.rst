@@ -57,16 +57,16 @@ Run
 
 To get your username and password with Robinhood set up, start the application (:code:`pipenv run flask run`) and any route will redirect you to the login page (:code:`http://localhost:5000/login`) if a client has not been instantiated, and one is required.
 
-For running in production environment, use :code:`pipenv run sh ./serve.sh`. This uses ``gunicorn`` which is better for production environment.
+For running in production environment, use ``pipenv run serve`` or :code:`pipenv run sh ./serve.sh`. This uses ``gunicorn`` which is better for production environment.
 
 Deploy
 ======
 
 To deploy to Digital Ocean, you can use the deploy script.
 
-.. code:: bash
-
-  python ./deploy.py
+Equivalent:
+* ``pipenv run deploy``
+* ``pipenv run python ./deploy.py``
 
 **********
 References
@@ -88,12 +88,19 @@ To activate this project's virtualenv, run :code:`pipenv shell`. I start my text
 Tests
 =====
 
-Run :code:`pipenv run python -m pytest --cov=marian tests`.
+Run ``pipenv run tests`` or ``pipenv run python -m pytest --cov=marian tests``.
 
 Linting
 =======
 
-Run :code:`pipenv run pylint **/*.py`.
+Run ``pipenv run lint`` or ``pipenv run pylint **/*.py``.
+
+Documentation
+=============
+
+* Sphinx docs: `nebulousdog.github.io/marian/ <https://nebulousdog.github.io/marian/>`_
+* Github: `github.com/nebulousdog/marian <https://github.com/nebulousdog/marian>`_
+* Generate: ``pipenv run docs`` or ``pipenv run sphinx-build -b html docs/src docs/html``
 
 *******
 License
