@@ -6,7 +6,12 @@ from functools import wraps
 import inspect
 import requests
 import fast_arrow
-from flask import session
+from flask import (
+    redirect,
+    request,
+    session,
+    url_for,
+)
 from .utils.strings import (
     hlt,
     warn,
@@ -38,8 +43,11 @@ class FastArrowQuiver():
         self.options = kwargs
         self.client = None
 
+        print('dynamically attaching fast_arrow resources.')
+        print(f'{hlt("Marian.quiver")} receiving the following methods:')
         for resource in self.resources():
             self.add_fast_arrow_resource(resource)
+        print('')
 
     def add_fast_arrow_resource(self, resource):
         """
@@ -53,16 +61,22 @@ class FastArrowQuiver():
             print(f'attempting to overwrite resource {warn(resource_name)}.')
             raise AttributeError
 
-        print(f'dynamically adding {hlt(resource_name)} resource...')
         setattr(self, resource_name, resource)
         quiver_resource = getattr(self, resource_name)
 
         member_tuples = inspect.getmembers(resource, predicate=inspect.ismethod)
         for resource_method_name, resource_method in member_tuples:
-            print(f'  enhancing {hlt("#" + resource_method_name)}...')
+            constructed_route = '/' + resource_name + '/' + resource_method_name
+            constructed_endpoint = 'quiver.' + resource_name + '.' + resource_method_name
+            self.options['app'].add_url_rule(
+                constructed_route,
+                constructed_endpoint,
+                resource_method,
+            )
 
-            setattr(quiver_resource, resource_method_name, self.include_client(resource_method))
-            print('  ' + hlt(resource_name + '#' + resource_method_name) + ' attached.')
+            decorated_method = self.login_required(self.include_client(resource_method))
+            setattr(quiver_resource, resource_method_name, decorated_method)
+            print('  ' + hlt('.' + resource_name + '.' + resource_method_name) + ' attached.')
 
     def include_client(self, member_func):
         """
@@ -72,7 +86,6 @@ class FastArrowQuiver():
 
         @wraps(member_func)
         def decorated_function(*args, **kwargs):
-            print("BBQCITY", self)
             return member_func(client=self.client, *args, **kwargs)
 
         return decorated_function
@@ -90,7 +103,10 @@ class FastArrowQuiver():
             try:
                 self.client.authenticate()
             except requests.exceptions.HTTPError as e:
-                print('authentication failed.')
+                print('authentication failed (HTTPError).')
+                raise e
+            except fast_arrow.exceptions.AuthenticationError as e:
+                print('authentication failed (AuthenticationError).')
                 raise e
 
             session['rh_username'] = username
@@ -99,3 +115,25 @@ class FastArrowQuiver():
             print('done.')
         else:
             print('didnt need to initialize client. one already exists.')
+
+    def login_required(self, f):
+        """use saved session info to authenticate"""
+
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if session.get('rh_username') is None or session.get('rh_password') is None:
+                print('no stored login details found. redirecting to login page.')
+                return redirect(url_for('login', next=request.url))
+
+            try:
+                print('authenticating using stored login details.')
+                self.initialize_client(
+                    username=session.get('rh_username'),
+                    password=session.get('rh_password'),
+                )
+            except requests.exceptions.HTTPError:
+                return redirect(url_for('login', next=request.url))
+
+            return f(*args, **kwargs)
+
+        return decorated_function

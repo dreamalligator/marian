@@ -15,6 +15,7 @@ from flask import (
     request,
     session,
     url_for,
+    jsonify,
 )
 from .fast_arrow_quiver import FastArrowQuiver
 from .utils.routes import route_info
@@ -58,7 +59,8 @@ def create_app(test_config=None):
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
 
-    quiver = FastArrowQuiver()
+    # would be nice to keep quiver and routing completely separate.
+    quiver = FastArrowQuiver(app=app)
 
     @app.route('/')
     def index(): # pylint: disable=unused-variable
@@ -96,27 +98,12 @@ def create_app(test_config=None):
         session.clear()
         return redirect(url_for('index'))
 
-    def login_required(self, f):
-        """use saved session info to authenticate"""
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            print('!!!', session.get('rh_username'), session)
-            print('new methods at this point?', self)
-            try:
-                self.initialize_client(
-                    username=session.get('rh_username'),
-                    password=session.get('rh_password'),
-                )
-            except requests.exceptions.HTTPError:
-                return redirect(url_for('login', next=request.url))
-
-            return f(*args, **kwargs)
-
-        return decorated_function
-
-    @app.route('/test')
-    @login_required
-    def my_test_route(): # pylint: disable=unused-variable
-        quiver.user.fetch() # pylint: disable=maybe-no-member
+    # all fast_arrow methods are dynamically built, so we dont really
+    # get any examples of manually writing routes. here is one.
+    # @app.route('/test')
+    # @quiver.login_required
+    # def test_route(): # pylint: disable=unused-variable
+    #     # print('USER!!!', quiver.dividend.all())
+    #     return jsonify({})
 
     return app
