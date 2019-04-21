@@ -12,12 +12,34 @@ Marian
    :target: https://pypi.org/project/marian/
    :alt: pypi-link
 
-* no setup other than cloning project or installing as a dependency. just log in, and if you hit an endpoint requiring authentication, you will be redirected to the login page, and navigated back to where you were after.
-* deploy to Digital Ocean easily. the deploy script will walk you through it. or, you can automatically deploy with Travis-CI during development.
-* secure authentication. no saving plain text files like many of the peer Robinhood code projects.
-* all the regular benefits of being a Flask application. for example, can extend the base routes as you wish, or run multiple instances of the app easily.
-* every endpoint can parse in CSV format. this makes importing in Google Sheets very easy. You'll like this if you have ever written shitty Google apps scripts for your sheets.
-* create auth tokens for yourself. this will allow google sheets to access the api while keeping your sensitive data private.
+Marian at her heart is an API server application for `Robinhood <https://robinhood.com>`_. The endpoints are dynamically built on `Fast Arrow <https://github.com/westonplatter/fast_arrow>`_. As such, it is easily extendable.
+
+*************
+Google Sheets
+*************
+
+My original goal was to make importing data into `Google Sheets <https://developers.google.com/apps-script/guides/sheets>`_ easier. The pain points are quickly realized. Here are some nice features this project has that will make your life easier with Sheets.
+
+* secure and encrypted saving of login details.
+* generate auth tokens for yourself.
+* every Robinhood endpoint is supported that Fast Arrow supports.
+* every endpoint returns data in CSV format simply by adding a ``csv`` param.
+* work in your own dev environment with all perks of such.
+
+********
+Features
+********
+
+My favorite part of the project is that each base endpoint is dynamically created. Supported endpoints will automatically be added as they are added to Fast Arrow. Each of these endpoints is additionally decorated to require authorized logins, export in CSV format, and attaches the requisite Fast Arrow client that persists your connection. This simplifies the number of params to pass along. Routes for every one of these methods is created as well.
+
+.. image:: https://user-images.githubusercontent.com/2218331/56465106-379be880-63ac-11e9-8ac0-574911f7fa2f.png
+   :alt: dynamically applied fast_arrow methods
+
+The other features are basically just features of being a Flask application, but here are some other highlights:
+
+* add your own endpoints and routes with no hassle.
+* deploy to Digital Ocean
+* security in mind during every step
 
 ***************
 Getting Started
@@ -28,14 +50,14 @@ Follow these instructions to get the Marian application going.
 Install
 =======
 
-Need :code:`python3`, :code:`pip3`, and :code:`pipenv` installed first. Then run :code:`pipenv install --dev`.
+Need :code:`python3`, :code:`pip3`, and :code:`pipenv` installed first. Then run :code:`pipenv install`.
 
 Run
 ===
 
 To get your username and password with Robinhood set up, start the application (:code:`pipenv run flask run`) and any route will redirect you to the login page (:code:`http://localhost:5000/login`) if a client has not been instantiated, and one is required.
 
-For running in production environment, use :code:`pipenv run sh ./serve.sh`. This uses `:code:`gunicorn` <https://github.com/benoitc/gunicorn>`_ which is better for production environment.
+For running in production environment, use :code:`pipenv run sh ./serve.sh`. This uses ``gunicorn`` which is better for production environment.
 
 Deploy
 ======
