@@ -28,7 +28,7 @@ def deploy_droplet(token=retrieve_token()):
         print('Something went wrong. ' + request.json()['message'])
         return
 
-    print('Deployed! 🐈')
+    print('Deployed! 👸')
 
 def retrieve_token():
     """

@@ -21,8 +21,8 @@ gunicorn = "*"
 python_version = "3.6"
 
 [scripts]
-deploy = "pipenv run python ./deploy.py"
-docs = "pipenv run python ./docs.py"
-lint = "pipenv run pylint **/*.py"
-serve = "pipenv run sh ./serve.sh"
-tests = "pipenv run python -m pytest --cov=marian tests"
+deploy = "python ./deploy.py"
+docs = "python ./docs.py"
+linting = "pylint **/*.py"
+unit_tests = "python -m pytest --cov=marian tests"
+serve = "sh ./serve.sh"
