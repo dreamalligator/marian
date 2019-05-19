@@ -1,12 +1,19 @@
 language: python
 python:
-  - "3.6"
+- '3.6'
 install:
-  - pip install pipenv
-  - pipenv install --dev
+- pip install pipenv
+- pipenv install --dev
 script:
-  - pylint **/*.py
-  - python -m pytest --cov=marian tests
-  - python ./docs.py
+- pylint **/*.py
+- python -m pytest --cov=marian tests
+- python ./docs.py
 after_success:
-  - codecov
+- codecov
+deploy:
+  provider: pypi
+  user: digitalvapor
+  password:
+    secure: KIwORQLn2vf8jRToid//XE9UxNHibBPHcDhgN97r+bLyhG3soQxELdDPejfEN19SNyPZrmvn6JT9utwAFEJvwQ00TnzPgor+W1exxPUszDrfX5GF/pGyvcsfQ4C7idbkjxb68xNO4FJZsqL/kbUzpp34qCn8No00uJOeLtDk6TrfAkCiKZWlE3qIbTEXfIpXni3jFkhb2utjkX+0lV06q6gQlaLYaiBZ5LOSZVaIqs+WkLT5j8Vetgw2g4EgAw6Msin4Ia6nzRP5FHYLxwI41qI8kLTxSyg+e7SSCGZ7m9yyzlHmdGgNXQTt4CbjpJlKYthngYVj8oRR8JRe7+m+E1jaQ5lk8Giskzlc2NvRr3knMNjg0522OzWsDQPiZdalL9uaUSJy1dno3T9mna0xKPHHjbMEc0iMAPk9jGrNLrhDVgOyvni8MzJA0GG41/Rw4UQX5ViiCbHvUWWuQ3ngSr9yzIaNOEzq1oTNK4hOLRQDwMp8qQa1oCJhAsjPnNsKtQtOisdRgPdT89PyjpVDVrrkg92ArhnwR+hC5Rb7swHrQ/BkLmv6xKQN+Z3VmSuFc50wAaeRS/sJLOy9GcvFciXYzaIlgCKZDj7JvJkWArJKPKDoTmtVzlqOqPbrPmHnPuwgDChEAx70O5v3tGNP29nEoK2HahGeBxgcyY5FeMA=
+  on:
+    tags: true
