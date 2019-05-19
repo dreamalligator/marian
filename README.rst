@@ -12,7 +12,8 @@ Marian
    :target: https://pypi.org/project/marian/
    :alt: pypi-link
 
-Not really ready for consumption. Making public so I can use handy-dandy Travis-CI.
+- Github: `https://github.com/nebulousdog/marian <https://github.com/nebulousdog/marian>`_
+- Website: `https://nebulousdog.github.io/marian <https://nebulousdog.github.io/marian>`_
 
 *******
 License

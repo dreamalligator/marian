@@ -4,4 +4,4 @@ instance
 __pycache__
 dist
 marian.egg-info
-docs/*
+docs/*.html
