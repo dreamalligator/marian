@@ -5,6 +5,6 @@ install:
   - pip install pipenv
   - pipenv install --dev
 script:
-  - pipenv run unit_tests
-  - pipenv run linting
-  - pipenv run docs
+  - pylint **/*.py
+  - python -m pytest --cov=marian tests
+  - python ./docs.py
