@@ -3,7 +3,7 @@ Marian
 ######
 
 .. image:: https://travis-ci.org/nebulousdog/marian.svg?branch=master
-   :target: https://travis-ci.com/nebulousdog/marian
+   :target: https://travis-ci.org/nebulousdog/marian
    :alt: travis-link
 .. image:: https://coveralls.io/repos/github/nebulousdog/marian/badge.svg?branch=master
    :target: https://coveralls.io/github/nebulousdog/marian?branch=master
