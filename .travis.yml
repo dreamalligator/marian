@@ -1,0 +1,27 @@
+language: python
+python:
+- '3.6'
+install:
+- pip install pipenv
+- pipenv install --dev
+script:
+- pylint **/*.py
+- python -m pytest --cov=marian tests
+- python ./docs.py
+after_success:
+- codecov
+deploy:
+- provider: pypi
+  user: digitalvapor
+  password:
+    secure: IWZ0u8M4WNNDHoN4IgfvfMtuUCx/pGW1XIx8GHPhPfJHhGrOuu+KaWLXoGgVoHVylTy5CPXNXQ/k/uq/x9TxDlKlMQMRxRntwNVldj4v12B2LZcJeWKOyYd4qxy7lZ+TRDUEMmD7a6BZq7kTO6y4wrWg/u1F3e6WyeseATpRDQFsCfJS7ZV1nlMIUHDyEh7dtvAdliKvIKOBBfqcLf6Zub1aEafYQl5/Cc/NoGKNK0YE/fn2v+tbR9TVAJELyvLUYXzQGfSjgMAWFkKgygTIj6524xq7TKRXGoFUUP/+GgnIGaXQ7AjQtGicV5fzm7Tk8CRa60O648FLqn4e6S7SkGk8SFu1VtfCjXIxwKjeso+hT1NO1WlPtYpo1CMT/S7O15KUzRkRoodJG+RivHw2ssoIh0NuTsTJl3lxFVSSbQa+CX6hCjyYO+l5IFaYBdYLD8FrOTHQebkrj2kwYj9rypu8O4VwlH9SSP8mz1jPaUJtZQg3kDSjHSZVtzfHdwXhgbTfQIhZUari7WdhIh4NWuHgbdLcZS5eCgMfLRJdrK1pcxEX0esJqZawcEuO0qC0KxYR8UVs3aD+fKgElJbv5GK7ShUpdzkrEmv5YYLkW2yJ8MiD/ni6ZF/Nio7Mrj/D1zJVvwZK0NXf6Z6nTa7DsZTi2ScmwF6w5pPSuH/xy08=
+  on:
+    tags: true
+- provider: pages
+  skip_cleanup: true
+  github_token:
+    secure: GBIdpeqC/I3ecPYYQK0yZy8ZQrCwuymNqj/1qVUYAqleSGEV/G6ZjHQvg3E6dMdg92aL2dw1vf7xAMM+KORFzBKy1v1/Gr2wUXVNeZzNSzaTEJyfKLBy+gVYDW6J2qQBPO4oP4ARjtuuk3Qgcdu4xkKgl8Iv/9ZhEg3La4koCrHmHHUAA4eO60TBb1cHfs7eTOmQ073ULD9stPmkwEcmYypL3xKEY2MW3MiNfQbfBaGY91hddhbzvnd0ccnanuhlN84qPG/AR3ZkO5Sjfrh4BVhhQpJQG+gE0vJQyi9PsulbzDa9PIs6oHzyOO7aYGiP8efWiSd+QVFrKNa3Z8ZRzCu/AGcejF33zF0W/hAIj7CUp9DJuO8/Vis17s2opVCfvexeyE741e3/0plEMalQ5cInbYAj7vZTq6YIpaoDgSce0st5Z0SX3UBNM/F1gvU5gQg0Um6vmur1qO33xhCMZ1VtROwuOUg/E0mwwax7MPUN0MOkpJYbDKHr6J1DauC7WIAMQfNUPJkOK/vskuLljXdPUDvlI48xaGteyQ5PFpHOXleYTGl87HiJXBs8FpByTUXUDp01dPHMv72GHc6HWQ0j+8/PpC3sAdY0PZfGexzBrB8Hzn+O/Z0hjNqRgezgKV0Lk+/mL9xuqP6acCnhEUBsQDgbXSIJB8FE4PkW5OE=
+  keep_history: true
+  on:
+    branch: master
+    tags: true
