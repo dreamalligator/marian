@@ -8,3 +8,5 @@ script:
   - pylint **/*.py
   - python -m pytest --cov=marian tests
   - python ./docs.py
+after_success:
+  - codecov
