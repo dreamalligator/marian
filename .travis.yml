@@ -19,6 +19,7 @@ deploy:
     tags: true
 - provider: pages
   skip_cleanup: true
+  local-dir: ./docs
   github_token:
     secure: GBIdpeqC/I3ecPYYQK0yZy8ZQrCwuymNqj/1qVUYAqleSGEV/G6ZjHQvg3E6dMdg92aL2dw1vf7xAMM+KORFzBKy1v1/Gr2wUXVNeZzNSzaTEJyfKLBy+gVYDW6J2qQBPO4oP4ARjtuuk3Qgcdu4xkKgl8Iv/9ZhEg3La4koCrHmHHUAA4eO60TBb1cHfs7eTOmQ073ULD9stPmkwEcmYypL3xKEY2MW3MiNfQbfBaGY91hddhbzvnd0ccnanuhlN84qPG/AR3ZkO5Sjfrh4BVhhQpJQG+gE0vJQyi9PsulbzDa9PIs6oHzyOO7aYGiP8efWiSd+QVFrKNa3Z8ZRzCu/AGcejF33zF0W/hAIj7CUp9DJuO8/Vis17s2opVCfvexeyE741e3/0plEMalQ5cInbYAj7vZTq6YIpaoDgSce0st5Z0SX3UBNM/F1gvU5gQg0Um6vmur1qO33xhCMZ1VtROwuOUg/E0mwwax7MPUN0MOkpJYbDKHr6J1DauC7WIAMQfNUPJkOK/vskuLljXdPUDvlI48xaGteyQ5PFpHOXleYTGl87HiJXBs8FpByTUXUDp01dPHMv72GHc6HWQ0j+8/PpC3sAdY0PZfGexzBrB8Hzn+O/Z0hjNqRgezgKV0Lk+/mL9xuqP6acCnhEUBsQDgbXSIJB8FE4PkW5OE=
   keep_history: true
