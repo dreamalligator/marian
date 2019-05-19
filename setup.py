@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="marian",
-    version="0.0.1",
+    version="0.0.2",
     author="Tom Spalding",
     author_email="tom@catcobralizard.com",
     description="a personal Robinhood API server",
