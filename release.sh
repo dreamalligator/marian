@@ -18,6 +18,8 @@ then
 else version_error
 fi
 
-git commit -am "release v$1"
+git add -A
+git commit -m "release v$1"
+
 git tag v$1
 git push --tags
