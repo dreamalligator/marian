@@ -1,7 +1,7 @@
-instance
-.pytest_cache
-.coverage
 __pycache__
-dist
-marian.egg-info
+*.egg-info
+.pytest_cache/
+.coverage
+dist/
 docs/*.html
+instance/

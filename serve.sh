@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-gunicorn "marian:create_app()"
+gunicorn "marian.app:create_app()"

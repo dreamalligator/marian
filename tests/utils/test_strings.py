@@ -1,6 +1,7 @@
 from marian.utils.strings import (
     hlt,
     snake_case,
+    warn,
 )
 
 def test_hlt():
@@ -13,3 +14,6 @@ def test_snake_case():
     assert snake_case('Name') == 'name'
     assert snake_case('class_name') == 'class_name'
     assert snake_case('name') == 'name'
+
+def test_warn():
+    assert warn('bebop!') == '\x1b[93mbebop!\x1b[0m'

@@ -7,7 +7,7 @@ import os.path
 from flask import json
 import requests
 
-def deploy_droplet(token=retrieve_token()):
+def deploy_droplet(token):
     """deploy a new droplet."""
 
     droplet_info = {
@@ -30,32 +30,6 @@ def deploy_droplet(token=retrieve_token()):
 
     print('Deployed! 👸')
 
-def retrieve_token():
-    """
-    check if have a saved Digital Ocean API token, or retreive one.
-    """
-
-    token_file_name = 'DIGITALOCEAN_TOKEN'
-
-    if os.path.isfile(token_file_name):
-        print('token found...')
-
-        with open(token_file_name, 'r') as token_f:
-            digitalocean_token = token_f.read().replace('\n', '')
-    else:
-        digitalocean_token = input(
-            '''Digital Ocean API token not found, retrieve your token from digitalocean.
-visit https://cloud.digitalocean.com/account/api/tokens.
-enter token: '''
-        )
-
-        with open(token_file_name, 'w') as token_f:
-            token_f.write(digitalocean_token)
-
-        print('token saved to DIGITALOCEAN_TOKEN.')
-
-    return digitalocean_token
-
 def get_droplet_id():
     """get droplet id from cached info, prevents unnecessary requests."""
 
@@ -73,6 +47,23 @@ def get_droplet_ip():
     with open(cached_droplet_info_file, 'r') as info_f:
         droplet_info = json.load(info_f)
         return droplet_info['networks']['v4'][0]['ip_address']
+
+def get_key_fingerprints(token):
+    """
+    Using ssh_key fingerprints because array of ids seems broken on Digital
+    Ocean's side.
+    """
+
+    request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
+
+    return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
+
+def get_key_ids(token):
+    """get a key to embed when making a new droplet."""
+
+    request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
+
+    return list(map(lambda key: key['id'], request.json()['ssh_keys']))
 
 def headers(token):
     """heads up."""
@@ -109,19 +100,28 @@ def refresh_droplet_cache(token):
     if not refreshed:
         print('no catcobralizard droplets found.')
 
-def get_key_fingerprints(token):
+def retrieve_token():
     """
-    Using ssh_key fingerprints because array of ids seems broken on Digital
-    Ocean's side.
+    check if have a saved Digital Ocean API token, or retreive one.
     """
 
-    request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
+    token_file_name = 'DIGITALOCEAN_TOKEN'
 
-    return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
+    if os.path.isfile(token_file_name):
+        print('token found...')
 
-def get_key_ids(token):
-    """get a key to embed when making a new droplet."""
+        with open(token_file_name, 'r') as token_f:
+            digitalocean_token = token_f.read().replace('\n', '')
+    else:
+        digitalocean_token = input(
+            '''Digital Ocean API token not found, retrieve your token from digitalocean.
+visit https://cloud.digitalocean.com/account/api/tokens.
+enter token: '''
+        )
 
-    request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
+        with open(token_file_name, 'w') as token_f:
+            token_f.write(digitalocean_token)
 
-    return list(map(lambda key: key['id'], request.json()['ssh_keys']))
+        print('token saved to DIGITALOCEAN_TOKEN.')
+
+    return digitalocean_token

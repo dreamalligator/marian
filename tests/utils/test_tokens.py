@@ -1,8 +1,8 @@
 import string
 from marian.utils.tokens import (
     create_secret_key,
-    encode_auth_token,
     decode_auth_token,
+    encode_auth_token,
 )
 
 def test_create_secret_key():

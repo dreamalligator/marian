@@ -12,8 +12,7 @@ Marian
    :target: https://pypi.org/project/marian/
    :alt: pypi-link
 
-- Github: `https://github.com/nebulousdog/marian <https://github.com/nebulousdog/marian>`_
-- Website: `https://nebulousdog.github.io/marian <https://nebulousdog.github.io/marian>`_
+Find documentation at `github.com/nebulousdog/marian <https://github.com/nebulousdog/marian>`_. A static version of the app is generated as a Github Page at `nebulousdog.github.io/marian <https://nebulousdog.github.io/marian>`_.
 
 *******
 License
