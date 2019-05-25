@@ -13,6 +13,7 @@ setuptools.setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
     url='https://github.com/nebulousdog/marian',
+    packages=setuptools.find_packages(),
     license='MIT',
     classifiers=[
         'Framework :: Flask',

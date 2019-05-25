@@ -6,7 +6,7 @@ from marian.utils.deploy import (
     # get_key_ids,
     headers,
     # refresh_droplet_cache,
-    # retrieve_token,
+    retrieve_token,
 )
 
 def test_deploy_droplet():
@@ -31,4 +31,4 @@ def test_refresh_droplet_cache():
     pass
 
 def test_retrieve_token():
-    pass
+    assert retrieve_token('DIGITALOCEAN_TOKEN_EXAMPLE') == 'k1ttyc4t'

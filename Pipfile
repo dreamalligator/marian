@@ -7,7 +7,6 @@ verify_ssl = true
 pylint = "*"
 pylint-quotes = "*"
 pytest = "*"
-sphinx = "*"
 pytest-cov = "*"
 codecov = "*"
 
@@ -20,10 +19,3 @@ gunicorn = "*"
 
 [requires]
 python_version = "3.6"
-
-[scripts]
-deploy = "python ./deploy.py"
-docs = "python ./docs.py"
-linting = "pylint **/*.py"
-unit_tests = "python -m pytest --cov=marian tests"
-serve = "sh ./serve.sh"

@@ -26,6 +26,7 @@ def deploy_droplet(token):
     # pylint: disable=E1101
     if request.status_code != requests.codes.accepted:
         print('Something went wrong. ' + request.json()['message'])
+        request.raise_for_status()
         return
 
     print('Deployed! 👸')
@@ -77,19 +78,19 @@ def headers(token):
 
 def refresh_droplet_cache(token):
     """
-    check if have saved catcobralizard droplet info, or retrieve it.
+    check if have saved marian droplet info, or retrieve it.
     see https://cloud.digitalocean.com/account/api/tokens.
     """
 
     cached_droplet_info_file = 'droplet_info.json'
 
-    print('attempting to retrieve catcobralizard info...')
+    print('attempting to retrieve marian info...')
 
     request = requests.get('https://api.digitalocean.com/v2/droplets', headers=headers(token))
 
     refreshed = False
     for droplet in request.json()['droplets']:
-        if droplet['name'] == 'catcobralizard':
+        if droplet['name'] == 'marian':
             with open(cached_droplet_info_file, 'w') as info_f:
                 info_f.write(json.dumps(droplet))
             droplet_id = droplet['id']
@@ -98,17 +99,15 @@ def refresh_droplet_cache(token):
             break
 
     if not refreshed:
-        print('no catcobralizard droplets found.')
+        print('no marian droplets found.')
 
-def retrieve_token():
+def retrieve_token(token_file_name='DIGITALOCEAN_TOKEN'):
     """
     check if have a saved Digital Ocean API token, or retreive one.
     """
 
-    token_file_name = 'DIGITALOCEAN_TOKEN'
-
     if os.path.isfile(token_file_name):
-        print('token found...')
+        print('token found.')
 
         with open(token_file_name, 'r') as token_f:
             digitalocean_token = token_f.read().replace('\n', '')
