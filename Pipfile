@@ -9,6 +9,7 @@ pylint-quotes = "*"
 pytest = "*"
 pytest-cov = "*"
 codecov = "*"
+docutils = "*"
 
 [packages]
 flask = "*"
