@@ -66,6 +66,33 @@ def get_key_ids(token):
 
     return list(map(lambda key: key['id'], request.json()['ssh_keys']))
 
+def get_pub_key():
+    """could use some feedback on security."""
+
+    return input("enter pub key:")
+
+def add_pub_key(token):
+    """upload public key to DO account."""
+
+    params = {
+        'name': 'basic',
+        'public_key': get_pub_key(),
+    }
+
+    request = requests.post(
+        'https://api.digitalocean.com/v2/account/keys',
+        headers=headers(token),
+        params=params,
+    )
+
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code == requests.codes.created:
+        print('done.')
+        return
+
+    print(request.json()['message'])
+
 def headers(token):
     """heads up."""
 
