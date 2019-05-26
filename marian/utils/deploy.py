@@ -15,7 +15,8 @@ def deploy_droplet(token):
         'region': 'sfo2',
         'size': '4gb',
         'image': 'ghost-18-04',
-        'ssh_keys': get_key_fingerprints(token)
+        # 'ssh_keys[]': get_key_ids(token)
+        'ssh_keys[]': get_key_fingerprints(token)
     }
 
     print('deploying new droplet...')
