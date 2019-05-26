@@ -2,6 +2,10 @@
 
 import os.path
 import requests
+from marian.utils.scripts import (
+    join_bash_scripts,
+    open_files,
+)
 
 def deploy_droplet(token):
     """
@@ -9,14 +13,17 @@ def deploy_droplet(token):
     further provision.
     """
 
+    # after deploying, run the following scripts to install, then serve app
+    # via wsgi
+    scripts = open_files(['./install.sh', './serve.sh'])
+
     droplet_info = {
         'name': 'marian',
         'region': 'sfo2',
         'size': '4gb',
         'image': 'ubuntu-18-04-x64',
-        # 'ssh_keys[]': get_key_ids(token)
         'ssh_keys[]': get_key_fingerprints(token),
-        'user_data': user_data(),
+        'user_data': join_bash_scripts(scripts),
     }
 
     print('deploying new droplet...')
@@ -45,17 +52,14 @@ def destroy():
     print('destroy is a noop atm')
 
 def get_key_fingerprints(token):
-    """
-    Using ssh_key fingerprints because array of ids seems broken on Digital
-    Ocean's side.
-    """
+    """fingerprints of keys authorized with DO to embed when making a new droplet."""
 
     request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
 
     return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
 
 def get_key_ids(token):
-    """get a key to embed when making a new droplet."""
+    """ids of keys authorized with DO to embed when making a new droplet."""
 
     request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
 
@@ -121,12 +125,3 @@ enter token: '''
         print('token saved to DIGITALOCEAN_TOKEN.')
 
     return digitalocean_token
-
-def user_data():
-    """
-    use the user_data to automatically provision the droplet when it is active.
-    """
-
-    install_f = open('./install.sh', 'r').read()
-    serve_f = open('./serve.sh', 'r').read()
-    return install_f + serve_f[1:]
