@@ -24,6 +24,7 @@ def deploy_droplet(token):
         'image': 'ubuntu-18-04-x64',
         'ssh_keys[]': get_key_fingerprints(token),
         'user_data': join_bash_scripts(scripts),
+        'tags[]': ['marian'],
     }
 
     print('deploying new droplet...')
@@ -41,15 +42,28 @@ def deploy_droplet(token):
     print(f'Deployed Marian 👸 (id: {droplet_id})!')
     return droplet_infos
 
-def destroy():
+def destroy(token):
     """
-    take down the droplet by name.
+    take down the droplets by tag name.
 
     this is useful when testing deploying to keep taking down all the droplets
-    of the name "marian".
+    of the tag "marian".
     """
 
-    print('destroy is a noop atm')
+    params = {
+        'tag_name': 'marian',
+    }
+
+    url = 'https://api.digitalocean.com/v2/droplets'
+    request = requests.delete(url, headers=headers(token), params=params)
+
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code == requests.codes.no_content:
+        print(f'destroyed all Marian droplets.')
+        return
+
+    print('Something went wrong. ' + request.json()['message'])
 
 def get_key_fingerprints(token):
     """fingerprints of keys authorized with DO to embed when making a new droplet."""
