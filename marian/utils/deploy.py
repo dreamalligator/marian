@@ -1,22 +1,22 @@
 """digital ocean deploy utils"""
 
 import os.path
-# if I understand correctly, both standard json and simplejson are the same,
-# except that standard json is based on an older simplejson version and lagging,
-# while simplejson will be kept up to date with Flask.
-from flask import json
 import requests
 
 def deploy_droplet(token):
-    """deploy a new droplet."""
+    """
+    deploy a new droplet. return the droplet infos so that it can be used to
+    further provision.
+    """
 
     droplet_info = {
         'name': 'marian',
         'region': 'sfo2',
         'size': '4gb',
-        'image': 'ghost-18-04',
+        'image': 'ubuntu-18-04-x64',
         # 'ssh_keys[]': get_key_ids(token)
-        'ssh_keys[]': get_key_fingerprints(token)
+        'ssh_keys[]': get_key_fingerprints(token),
+        'user_data': user_data(),
     }
 
     print('deploying new droplet...')
@@ -28,27 +28,21 @@ def deploy_droplet(token):
     if request.status_code != requests.codes.accepted:
         print('Something went wrong. ' + request.json()['message'])
         request.raise_for_status()
-        return
 
-    print('Deployed! 👸')
+    droplet_infos = request.json()['droplet']
+    droplet_id = droplet_infos['id']
+    print(f'Deployed Marian 👸 (id: {droplet_id})!')
+    return droplet_infos
 
-def get_droplet_id():
-    """get droplet id from cached info, prevents unnecessary requests."""
+def destroy():
+    """
+    take down the droplet by name.
 
-    cached_droplet_info_file = 'droplet_info.json'
+    this is useful when testing deploying to keep taking down all the droplets
+    of the name "marian".
+    """
 
-    with open(cached_droplet_info_file, 'r') as info_f:
-        droplet_info = json.load(info_f)
-        return droplet_info['id']
-
-def get_droplet_ip():
-    """get droplet ip from cache."""
-
-    cached_droplet_info_file = 'droplet_info.json'
-
-    with open(cached_droplet_info_file, 'r') as info_f:
-        droplet_info = json.load(info_f)
-        return droplet_info['networks']['v4'][0]['ip_address']
+    print('destroy is a noop atm')
 
 def get_key_fingerprints(token):
     """
@@ -104,31 +98,6 @@ def headers(token):
 
     return headers_obj
 
-def refresh_droplet_cache(token):
-    """
-    check if have saved marian droplet info, or retrieve it.
-    see https://cloud.digitalocean.com/account/api/tokens.
-    """
-
-    cached_droplet_info_file = 'droplet_info.json'
-
-    print('attempting to retrieve marian info...')
-
-    request = requests.get('https://api.digitalocean.com/v2/droplets', headers=headers(token))
-
-    refreshed = False
-    for droplet in request.json()['droplets']:
-        if droplet['name'] == 'marian':
-            with open(cached_droplet_info_file, 'w') as info_f:
-                info_f.write(json.dumps(droplet))
-            droplet_id = droplet['id']
-            print(f'saving info for droplet {droplet_id}...')
-            refreshed = True
-            break
-
-    if not refreshed:
-        print('no marian droplets found.')
-
 def retrieve_token(token_file_name='DIGITALOCEAN_TOKEN'):
     """
     check if have a saved Digital Ocean API token, or retreive one.
@@ -152,3 +121,12 @@ enter token: '''
         print('token saved to DIGITALOCEAN_TOKEN.')
 
     return digitalocean_token
+
+def user_data():
+    """
+    use the user_data to automatically provision the droplet when it is active.
+    """
+
+    install_f = open('./install.sh', 'r').read()
+    serve_f = open('./serve.sh', 'r').read()
+    return install_f + serve_f[1:]

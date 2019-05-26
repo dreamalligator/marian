@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-sudo apt-get install python3-pip
-pip3 install --user pipenv
-pipenv install --dev
+apt-get update
+apt-get install python3
+apt-get install python3-pip
+pip3 install marian

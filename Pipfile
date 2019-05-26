@@ -4,19 +4,19 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+codecov = "*"
+docutils = "*"
 pylint = "*"
 pylint-quotes = "*"
 pytest = "*"
 pytest-cov = "*"
-codecov = "*"
-docutils = "*"
+python-dotenv = "*"
 
 [packages]
-flask = "*"
-python-dotenv = "*"
 fast-arrow = "*"
-pyjwt = "*"
+flask = "*"
 gunicorn = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.6"
