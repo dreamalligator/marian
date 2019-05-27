@@ -1,13 +1,20 @@
 """digital ocean deploy utils"""
 
 import os
+import paramiko
 import requests
+from marian.utils.scripts import (
+    join_bash_scripts,
+    open_files,
+)
 
 def deploy_droplet(token):
     """
     deploy a new droplet. return the droplet infos so that it can be used to
     further provision.
     """
+
+    scripts = open_files(['./install.sh', './serve.sh'])
 
     droplet_info = {
         'name': 'marian',
@@ -16,6 +23,7 @@ def deploy_droplet(token):
         'image': 'ubuntu-18-04-x64',
         'ssh_keys[]': get_key_fingerprints(token),
         'tags[]': ['marian'],
+        'user_data': join_bash_scripts(scripts),
     }
 
     print('deploying new droplet...')
@@ -128,6 +136,22 @@ def headers(token):
     }
 
     return headers_obj
+
+def remotely_exec(droplet_ip, script):
+    """
+    remotely execute scripts on droplet.
+    """
+
+    client = paramiko.SSHClient()
+    client.load_system_host_keys()
+    client.connect(droplet_ip)
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    _stdin, stdout, stderr = client.exec_command(script)
+    print("stderr: ", stderr.readlines())
+    print("pwd: ", stdout.readlines())
+
+    client.close()
 
 def retrieve_token(token_file_name='DIGITALOCEAN_TOKEN'):
     """

@@ -15,6 +15,7 @@ setuptools.setup(
     url='https://github.com/nebulousdog/marian',
     packages=setuptools.find_packages(),
     license='MIT',
+    scripts=['./install.sh'],
     classifiers=[
         'Framework :: Flask',
         'Programming Language :: Python :: 3',
