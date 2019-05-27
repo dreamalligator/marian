@@ -1,11 +1,7 @@
 """digital ocean deploy utils"""
 
-import os.path
+import os
 import requests
-from marian.utils.scripts import (
-    join_bash_scripts,
-    open_files,
-)
 
 def deploy_droplet(token):
     """
@@ -13,17 +9,12 @@ def deploy_droplet(token):
     further provision.
     """
 
-    # after deploying, run the following scripts to install, then serve app
-    # via wsgi
-    scripts = open_files(['./install.sh', './serve.sh'])
-
     droplet_info = {
         'name': 'marian',
         'region': 'sfo2',
         'size': '4gb',
         'image': 'ubuntu-18-04-x64',
         'ssh_keys[]': get_key_fingerprints(token),
-        'user_data': join_bash_scripts(scripts),
         'tags[]': ['marian'],
     }
 
@@ -65,18 +56,40 @@ def destroy(token):
 
     print('Something went wrong. ' + request.json()['message'])
 
+def get_droplet(token, droplet_id):
+    """droplet info."""
+
+    url = f'https://api.digitalocean.com/v2/droplets/{droplet_id}'
+    request = requests.get(url, headers=headers(token))
+
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code != requests.codes.ok:
+        request.raise_for_status()
+
+    return request.json()['droplet']
+
+def existing_droplets(token):
+    """infos about existing Marian droplets."""
+
+    params = {
+        'tag_name': 'marian'
+    }
+
+    url = 'https://api.digitalocean.com/v2/droplets'
+    request = requests.get(url, headers=headers(token), params=params)
+    return request.json()['droplets']
+
 def get_key_fingerprints(token):
     """fingerprints of keys authorized with DO to embed when making a new droplet."""
 
     request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
-
     return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
 
 def get_key_ids(token):
     """ids of keys authorized with DO to embed when making a new droplet."""
 
     request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
-
     return list(map(lambda key: key['id'], request.json()['ssh_keys']))
 
 def get_pub_key():
