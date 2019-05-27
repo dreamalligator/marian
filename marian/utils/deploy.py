@@ -1,21 +1,32 @@
 """digital ocean deploy utils"""
 
-import os.path
-# if I understand correctly, both standard json and simplejson are the same,
-# except that standard json is based on an older simplejson version and lagging,
-# while simplejson will be kept up to date with Flask.
-from flask import json
+import os
 import requests
+from marian.app import create_app
+from marian.utils.scripts import (
+    join_bash_scripts,
+    open_files,
+)
 
 def deploy_droplet(token):
-    """deploy a new droplet."""
+    """
+    deploy a new droplet. return the droplet infos so that it can be used to
+    further provision.
+    """
+
+    # TODO: this doesnt appear to be working. Trying sshing after active instead.
+    # after deploying, run the following scripts to install, then serve app
+    # via wsgi
+    # scripts = open_files(['./install.sh', './serve.sh'])
 
     droplet_info = {
         'name': 'marian',
         'region': 'sfo2',
         'size': '4gb',
-        'image': 'ghost-18-04',
-        'ssh_keys': get_key_fingerprints(token)
+        'image': 'ubuntu-18-04-x64',
+        'ssh_keys[]': get_key_fingerprints(token),
+        # 'user_data': join_bash_scripts(scripts),
+        'tags[]': ['marian'],
     }
 
     print('deploying new droplet...')
@@ -27,44 +38,97 @@ def deploy_droplet(token):
     if request.status_code != requests.codes.accepted:
         print('Something went wrong. ' + request.json()['message'])
         request.raise_for_status()
+
+    droplet_infos = request.json()['droplet']
+    droplet_id = droplet_infos['id']
+    print(f'Deployed Marian 👸 (id: {droplet_id})!')
+    return droplet_infos
+
+def destroy(token):
+    """
+    take down the droplets by tag name.
+
+    this is useful when testing deploying to keep taking down all the droplets
+    of the tag "marian".
+    """
+
+    params = {
+        'tag_name': 'marian',
+    }
+
+    url = 'https://api.digitalocean.com/v2/droplets'
+    request = requests.delete(url, headers=headers(token), params=params)
+
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code == requests.codes.no_content:
+        print(f'destroyed all Marian droplets.')
         return
 
-    print('Deployed! 👸')
+    print('Something went wrong. ' + request.json()['message'])
 
-def get_droplet_id():
-    """get droplet id from cached info, prevents unnecessary requests."""
+def get_droplet(token, droplet_id):
+    """droplet info."""
 
-    cached_droplet_info_file = 'droplet_info.json'
+    url = f'https://api.digitalocean.com/v2/droplets/{droplet_id}'
+    request = requests.get(url, headers=headers(token))
 
-    with open(cached_droplet_info_file, 'r') as info_f:
-        droplet_info = json.load(info_f)
-        return droplet_info['id']
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code != requests.codes.ok:
+        request.raise_for_status()
 
-def get_droplet_ip():
-    """get droplet ip from cache."""
+    return request.json()['droplet']
 
-    cached_droplet_info_file = 'droplet_info.json'
+def existing_droplets(token):
+    """infos about existing Marian droplets."""
 
-    with open(cached_droplet_info_file, 'r') as info_f:
-        droplet_info = json.load(info_f)
-        return droplet_info['networks']['v4'][0]['ip_address']
+    params = {
+        'tag_name': 'marian'
+    }
+
+    url = 'https://api.digitalocean.com/v2/droplets'
+    request = requests.get(url, headers=headers(token), params=params)
+    return request.json()['droplets']
 
 def get_key_fingerprints(token):
-    """
-    Using ssh_key fingerprints because array of ids seems broken on Digital
-    Ocean's side.
-    """
+    """fingerprints of keys authorized with DO to embed when making a new droplet."""
 
     request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
-
     return list(map(lambda key: key['fingerprint'], request.json()['ssh_keys']))
 
 def get_key_ids(token):
-    """get a key to embed when making a new droplet."""
+    """ids of keys authorized with DO to embed when making a new droplet."""
 
     request = requests.get('https://api.digitalocean.com/v2/account/keys', headers=headers(token))
-
     return list(map(lambda key: key['id'], request.json()['ssh_keys']))
+
+def get_pub_key():
+    """could use some feedback on security."""
+
+    return input("enter pub key:")
+
+def add_pub_key(token):
+    """upload public key to DO account."""
+
+    params = {
+        'name': 'basic',
+        'public_key': get_pub_key(),
+    }
+
+    request = requests.post(
+        'https://api.digitalocean.com/v2/account/keys',
+        headers=headers(token),
+        params=params,
+    )
+
+    # see https://github.com/requests/requests/blob/master/requests/status_codes.py
+    # pylint: disable=E1101
+    if request.status_code == requests.codes.created:
+        print('done.')
+        return
+
+    print(request.json()['message'])
 
 def headers(token):
     """heads up."""
@@ -75,31 +139,6 @@ def headers(token):
     }
 
     return headers_obj
-
-def refresh_droplet_cache(token):
-    """
-    check if have saved marian droplet info, or retrieve it.
-    see https://cloud.digitalocean.com/account/api/tokens.
-    """
-
-    cached_droplet_info_file = 'droplet_info.json'
-
-    print('attempting to retrieve marian info...')
-
-    request = requests.get('https://api.digitalocean.com/v2/droplets', headers=headers(token))
-
-    refreshed = False
-    for droplet in request.json()['droplets']:
-        if droplet['name'] == 'marian':
-            with open(cached_droplet_info_file, 'w') as info_f:
-                info_f.write(json.dumps(droplet))
-            droplet_id = droplet['id']
-            print(f'saving info for droplet {droplet_id}...')
-            refreshed = True
-            break
-
-    if not refreshed:
-        print('no marian droplets found.')
 
 def retrieve_token(token_file_name='DIGITALOCEAN_TOKEN'):
     """

@@ -11,3 +11,15 @@ def app():
         pass
 
     return test_app
+
+@pytest.fixture
+def bash_0():
+    return open('./tests/fixtures/bash_0.sh', 'r').read()
+
+@pytest.fixture
+def bash_1():
+    return open('./tests/fixtures/bash_1.sh', 'r').read()
+
+@pytest.fixture
+def joined_script():
+    return open('./tests/fixtures/joined_script.sh', 'r').read()

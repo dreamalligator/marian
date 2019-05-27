@@ -6,7 +6,7 @@ install:
 - pipenv install --dev
 script:
 - pylint **/*.py
-- python -m pytest --cov=marian tests
+- python -m pytest --cov=marian
 - python ./docs.py
 after_success:
 - codecov
