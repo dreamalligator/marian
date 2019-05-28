@@ -67,7 +67,7 @@ def create_app(test_config=None):
                     password=request.form['password'],
                 )
             except requests.exceptions.HTTPError:
-                flash('Failed to log in.')
+                flash('Failed to log in.', 'error')
                 return render_template('login.html')
 
             flash('You were successfully logged in.')
