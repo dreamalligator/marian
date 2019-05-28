@@ -12,6 +12,16 @@
     </a>
     Find documentation at
     <a target="_blank" href="https://github.com/nebulousdog/marian">github.com/nebulousdog/marian</a>.
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
   </header>
   <hr>
   <main>

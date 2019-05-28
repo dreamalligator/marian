@@ -1,6 +1,8 @@
 import os
+import requests
 from flask import (
     Flask,
+    flash,
     send_from_directory,
     render_template,
     redirect,
@@ -59,10 +61,16 @@ def create_app(test_config=None):
     @app.route('/login', methods=['GET', 'POST'])
     def login(): # pylint: disable=unused-variable
         if request.method == 'POST':
-            quiver.initialize_client(
-                username=request.form['username'],
-                password=request.form['password'],
-            )
+            try:
+                quiver.initialize_client(
+                    username=request.form['username'],
+                    password=request.form['password'],
+                )
+            except requests.exceptions.HTTPError:
+                flash('Failed to log in.', 'error')
+                return render_template('login.html')
+
+            flash('You were successfully logged in.')
 
             if request.args.get('next') is None:
                 return redirect(url_for('index'))
@@ -86,6 +94,7 @@ def create_app(test_config=None):
     @app.route('/logout')
     def logout(): # pylint: disable=unused-variable
         session.clear()
+        flash('Logged out.')
         return redirect(url_for('index'))
 
     # all fast_arrow methods are dynamically built, so we dont really
