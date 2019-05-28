@@ -80,3 +80,19 @@ button {
   padding: 4px 8px;
   width: calc(100% / 3);
 }
+
+.flash-messages {
+  background-color: #32CD32;
+  box-sizing: border-box;
+  color: #fff;
+  font-weight: 600;
+  margin: 10px;
+}
+
+.flash-message {
+  display: inline-block;
+  margin: 5px 0;
+  padding: 5px 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
