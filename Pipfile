@@ -12,10 +12,10 @@ pytest = "*"
 pytest-cov = "*"
 python-dotenv = "*"
 click = "*"
+marian = {editable = true,path = "."}
 
 [packages]
 fast-arrow = "*"
 flask = "*"
 gunicorn = "*"
 pyjwt = "*"
-e1839a8 = {editable = true,path = "."}

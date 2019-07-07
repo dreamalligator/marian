@@ -1,9 +1,13 @@
+"""
+A script to generate all docs.
+"""
+
 from marian.utils.docs import (
     generate_cli_help_doc,
     generate_full_docs,
 )
 
-if __name__ == "__main__":
+def main():
     print('running marian cli once for output')
     generate_cli_help_doc()
     print('generated at docs/cli.rst')
@@ -11,3 +15,6 @@ if __name__ == "__main__":
     print('generating docs...')
     generate_full_docs()
     print('done with docs.')
+
+if __name__ == "__main__":
+    main()
