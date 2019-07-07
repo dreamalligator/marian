@@ -8,7 +8,7 @@ from marian.utils.deploy import (
     retrieve_token,
 )
 
-if __name__ == '__main__':
+def main():
     TOKEN = retrieve_token()
     EXISTING_DROPLETS = existing_droplets(TOKEN)
     print(f'{len(EXISTING_DROPLETS)} droplets already exist.')
@@ -27,6 +27,7 @@ if __name__ == '__main__':
         if DROPLET_INFO['status'] == 'active':
             DROPLET_IP = DROPLET_INFO['networks']['v4'][0]['ip_address']
             print(f'droplet is now active at {DROPLET_IP}.')
+            print(f'See https://github.com/nebulousdog/marian#marian.')
 
             print('TODO: use user_data script (already running remotely \
                 hopefully) or ssh and run script here.')
@@ -35,3 +36,6 @@ if __name__ == '__main__':
 
         print('uguuuuu')
         raise NotImplementedError
+
+if __name__ == '__main__':
+    main()

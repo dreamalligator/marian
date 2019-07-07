@@ -11,12 +11,11 @@ pylint-quotes = "*"
 pytest = "*"
 pytest-cov = "*"
 python-dotenv = "*"
+click = "*"
 
 [packages]
 fast-arrow = "*"
 flask = "*"
 gunicorn = "*"
 pyjwt = "*"
-
-[requires]
-python_version = "3.6"
+e1839a8 = {editable = true,path = "."}
