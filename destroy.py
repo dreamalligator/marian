@@ -7,5 +7,8 @@ from marian.utils.deploy import (
     retrieve_token,
 )
 
-if __name__ == '__main__':
+def main():
     destroy(retrieve_token())
+
+if __name__ == '__main__':
+    main()

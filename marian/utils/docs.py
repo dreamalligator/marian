@@ -1,6 +1,6 @@
 import docutils.core
 
-def generate_sphinx_docs():
+def generate_full_docs():
     """use readme as landing page"""
 
     docutils.core.publish_file(
@@ -8,3 +8,6 @@ def generate_sphinx_docs():
         destination_path="./docs/index.html",
         writer_name="html",
     )
+
+def generate_cli_help_doc():
+    """runs ``marian`` once and copies that output to a docs/cli/help.rst doc."""
