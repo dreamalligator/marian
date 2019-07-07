@@ -6,7 +6,7 @@ Get both Pipenv and CLI
 
 The recommended installation is via cloning the repo, but this has the downside of requiring all cli commands to be run like ``pipenv run python cli.py --version``. before you go "wth!", let me tell you we got you covered! :D
 
-simply run ``pipenv install -e``. now you have access to the full ``marian`` cli. it will also reflect your changes without having to install repeatedly after code changes.
+simply run ``pip install -e .``. now you have access to the full ``marian`` cli. it will also reflect your changes without having to install repeatedly after code changes.
 
 test with ``marian --version``. hooray.
 

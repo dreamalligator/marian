@@ -16,12 +16,18 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     license='MIT',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Framework :: Flask',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'Intended Audience :: Financial and Insurance Industry',
+        'Topic :: Office/Business :: Financial :: Investment',
     ],
+    entry_points={
+        'console_scripts': [
+            'marian=marian.cli:cli',
+        ],
+    },
 )

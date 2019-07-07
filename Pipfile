@@ -20,7 +20,6 @@ fast-arrow = "==0.3.3"
 flask = "*"
 gunicorn = "*"
 pyjwt = "*"
-e1839a8 = {editable = true,path = "."}
 
 [scripts]
 tests = "python -m pytest --cov=marian"
