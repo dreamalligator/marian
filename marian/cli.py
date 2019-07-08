@@ -18,21 +18,37 @@ def cli():
 
 @cli.command()
 def routes():
+    """Show all routes based on FLASK_ENV configuration."""
+
     import os
     os.system('flask routes')
 
 @cli.command()
 def token():
-    click.echo('token go here')
+    """
+    Show secret api token.
+
+    Do not share this with anyone.
+    """
 
 @cli.command()
 def deploy():
+    """Deploy to a Digital Ocean droplet."""
+
     from deploy import main
     main()
 
 @cli.command()
 def destroy():
+    """Destroy all Marian Digital Ocean droplets."""
     from destroy import main
+    main()
+
+@cli.command()
+def docs():
+    """Generate all documentation."""
+
+    from docs import main
     main()
 
 @cli.command()
@@ -41,13 +57,10 @@ def destroy():
     envvar='FLASK_ENV',
 )
 def serve(environment):
+    """Run Marian application based on FLASK_ENV configuration."""
+
     import os
     if environment == 'production':
         os.system('sh ./serve.sh')
     else:
         os.system('flask run')
-
-@cli.command()
-def docs():
-    from docs import main
-    main()
