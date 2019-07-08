@@ -10,7 +10,7 @@ def generate_full_docs():
     )
 
 def generate_cli_help_doc():
-    """runs ``marian`` once and copies that output to a docs/cli/help.rst doc."""
+    """runs ``marian`` once and copies that output to a docs/cli/help.txt doc."""
 
     from marian.cli import cli
     from click.testing import CliRunner
