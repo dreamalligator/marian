@@ -4,5 +4,6 @@ __pycache__
 .coverage
 dist/
 docs/*.html
+docs/**/*.txt
 instance/
 DIGITALOCEAN_TOKEN

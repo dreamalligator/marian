@@ -45,11 +45,20 @@ def destroy():
     main()
 
 @cli.command()
-def docs():
-    """Generate all documentation."""
+@click.option(
+    '--show',
+    is_flag=True,
+    default=False,
+    help='optionally open generated file to view docs automatically.',
+)
+def docs(show):
+    """Generate documentation."""
 
     from docs import main
     main()
+
+    if show:
+        click.launch('./docs/index.html')
 
 @cli.command()
 @click.argument(

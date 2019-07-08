@@ -13,6 +13,7 @@ pytest-cov = "*"
 python-dotenv = "*"
 click = "*"
 marian = {editable = true,path = "."}
+pigments = "*"
 
 [packages]
 fast-arrow = "*"
