@@ -1,3 +1,6 @@
 
 
-.. include:: help.rst
+.. include:: devs.rst
+
+.. include:: help.txt
+   :literal:

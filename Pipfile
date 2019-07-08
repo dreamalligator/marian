@@ -14,6 +14,7 @@ python-dotenv = "*"
 click = "*"
 twine = "*"
 readme-renderer = "*"
+pigments = "*"
 
 [packages]
 fast-arrow = "==0.3.3"

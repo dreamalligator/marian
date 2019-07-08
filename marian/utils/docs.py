@@ -11,3 +11,12 @@ def generate_full_docs():
 
 def generate_cli_help_doc():
     """runs ``marian`` once and copies that output to a docs/cli/help.rst doc."""
+
+    from marian.cli import cli
+    from click.testing import CliRunner
+
+    cli_help_filename = './docs/cli/help.txt'
+    with open(cli_help_filename, 'w') as doc_f:
+        runner = CliRunner()
+        result = runner.invoke(cli)
+        doc_f.write(result.output)
