@@ -2,6 +2,8 @@
 some helpers for the templates.
 '''
 
+from functools import wraps
+
 def route_info(app):
     """list the implemented Flask app's API routes."""
 
@@ -32,3 +34,21 @@ def route_info(app):
     output['routes'].sort(key=lambda route: str(route['rule']))
 
     return output
+
+def env_restricted(app, env=None):
+    """restrict a route to a specific environment."""
+
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if env is None:
+                raise ValueError('env must be supplied')
+
+            if app.config.get('ENV') != env:
+                return 'this route is restricted.'
+
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    return decorator

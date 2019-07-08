@@ -11,7 +11,10 @@ from flask import (
     url_for,
 )
 from .fast_arrow_quiver import FastArrowQuiver
-from .utils.routes import route_info
+from .utils.routes import (
+    env_restricted,
+    route_info,
+)
 from .utils.tokens import create_secret_key
 from .utils.strings import hlt
 
@@ -59,6 +62,7 @@ def create_app(test_config=None):
         return render_template('index.html', route_info=route_info(app))
 
     @app.route('/login', methods=['GET', 'POST'])
+    @env_restricted(app, 'development')
     def login(): # pylint: disable=unused-variable
         if request.method == 'POST':
             try:
@@ -80,10 +84,12 @@ def create_app(test_config=None):
         return render_template('login.html')
 
     @app.route('/stylesheets/<path:path>')
+    @env_restricted(app, 'development')
     def send_stylesheet(path): # pylint: disable=unused-variable
         return send_from_directory('stylesheets', path)
 
     @app.route('/javascripts/<path:path>')
+    @env_restricted(app, 'development')
     def send_js(path): # pylint: disable=unused-variable
         return send_from_directory('javascripts', path)
 
@@ -92,6 +98,7 @@ def create_app(test_config=None):
         return send_from_directory('images', path)
 
     @app.route('/logout')
+    @env_restricted(app, 'development')
     def logout(): # pylint: disable=unused-variable
         session.clear()
         flash('Logged out.')
