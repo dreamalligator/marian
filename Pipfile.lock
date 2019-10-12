@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9d3caea82b51a2c771bb4e47a9eb9071d6a86cc166639cc368eb19fb40ae1945"
+            "sha256": "9eac210bfb96baa42332c9477b2fce1fcb61e30fd4c0d9095c61a0819088a040"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -367,6 +367,13 @@
             ],
             "version": "==3.0.4"
         },
+        "click": {
+            "hashes": [
+                "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13",
+                "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
+            ],
+            "version": "==7.0"
+        },
         "codecov": {
             "hashes": [
                 "sha256:8ed8b7c6791010d359baed66f84f061bba5bd41174bf324c31311e8737602788",
@@ -486,6 +493,13 @@
                 "sha256:d9551545c6d761f3def1677baf08ab2a3ca17c56879e70fecba2fc4dde4ed108"
             ],
             "version": "==19.2"
+        },
+        "pigments": {
+            "hashes": [
+                "sha256:8f927e03d397854faca0bd147a97303dd42aa9d83f7bca385b12901be0906902"
+            ],
+            "index": "pypi",
+            "version": "==1.6"
         },
         "pkginfo": {
             "hashes": [

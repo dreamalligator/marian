@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 WARNING: this takes down any droplets it finds.
 """
@@ -7,5 +9,8 @@ from marian.utils.deploy import (
     retrieve_token,
 )
 
-if __name__ == '__main__':
+def main():
     destroy(retrieve_token())
+
+if __name__ == '__main__':
+    main()
