@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 WARNING: this takes down any droplets it finds.
 """

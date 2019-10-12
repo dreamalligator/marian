@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 A script to generate all docs.
 """

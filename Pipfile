@@ -25,9 +25,7 @@ pyjwt = "*"
 [scripts]
 tests = "python -m pytest --cov=marian"
 lints = "pylint marian tests release.py setup.py"
-
 bump_version = "python ./release.py"
-
 dist_create = "python setup.py sdist bdist_wheel"
 dist_check = "twine check dist/*"
 dist_upload_test = "twine upload --repository testpypi dist/*"

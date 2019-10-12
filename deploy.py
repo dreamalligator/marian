@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """deploy a fresh instance."""
 
 import time
