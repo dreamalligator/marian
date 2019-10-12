@@ -2,6 +2,7 @@
 Marian command line utility.
 """
 
+import os
 import click
 from marian.version import __version__
 
@@ -20,7 +21,6 @@ def cli():
 def routes():
     """Show all routes based on FLASK_ENV configuration."""
 
-    import os
     os.system('flask routes')
 
 @cli.command()
@@ -68,7 +68,6 @@ def docs(show):
 def serve(environment):
     """Run Marian application based on FLASK_ENV configuration."""
 
-    import os
     if environment == 'production':
         os.system('sh ./serve.sh')
     else:
