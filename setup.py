@@ -8,7 +8,7 @@ setuptools.setup(
     name='marian',
     version=__version__,
     author='Tom Spalding',
-    author_email='tom@catcobralizard.com',
+    author_email='tom@blackforestbotanics.com',
     description='a personal Robinhood API server built on Fast Arrow.',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
