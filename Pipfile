@@ -11,12 +11,22 @@ pylint-quotes = "*"
 pytest = "*"
 pytest-cov = "*"
 python-dotenv = "*"
+twine = "*"
+readme-renderer = "*"
 
 [packages]
-fast-arrow = "*"
+fast-arrow = "==0.3.3"
 flask = "*"
 gunicorn = "*"
 pyjwt = "*"
 
-[requires]
-python_version = "3.6"
+[scripts]
+tests = "python -m pytest --cov=marian"
+lints = "pylint marian tests release.py setup.py"
+
+bump_version = "python ./release.py"
+
+dist_create = "python setup.py sdist bdist_wheel"
+dist_check = "twine check dist/*"
+dist_upload_test = "twine upload --repository testpypi dist/*"
+dist_upload_pypi = "twine upload dist/*"
